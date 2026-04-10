@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Lou BERGOGNE">
+<meta name="dcterms.date" content="2024-10-24">
+
+<title>Bactmentha Database, mutations statistics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="mutations_stats_files/libs/clipboard/clipboard.min.js"></script>
+<script src="mutations_stats_files/libs/quarto-html/quarto.js"></script>
+<script src="mutations_stats_files/libs/quarto-html/popper.min.js"></script>
+<script src="mutations_stats_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="mutations_stats_files/libs/quarto-html/anchor.min.js"></script>
+<link href="mutations_stats_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="mutations_stats_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="mutations_stats_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="mutations_stats_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="mutations_stats_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Bactmentha Database, mutations statistics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Lou BERGOGNE </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 24, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Some mutations informations about either the pathogen or the host proteins can be observed in BactMentha features tables. This code aims to provide some statistics about those mutations and particularly their effect on the interaction and their position (inside or outside the experimentally detected binding region or predictied interface).</p>
+</section>
+<section id="methods" class="level1">
+<h1>Methods</h1>
+<p>The classification of the features (binding reagions, mutations…) comes from the Search Ontology (<a href="https://www.ebi.ac.uk/ols4/">https://www.ebi.ac.uk/ols4/</a>). The mimicint interfaces are provided by MimicINT tool.</p>
+<section id="mutations" class="level2">
+<h2 class="anchored" data-anchor-id="mutations">Mutations</h2>
+<p>Mutations can be characterized by their effect on the interaction the protein is involved in:<br> - <strong>mutation</strong>: A change in a sequence or structure in comparison to a reference entity due to a insertion, deletion or substitution event.<br> - <strong>variant</strong>: A natural change in a sequence or structure in comparison to a reference entity.<br> - <strong>mutation increasing interaction</strong>: Region of a molecule whose mutation or deletion increases significantly interaction strength or rate (in the case of interactions inferred from enzymatic reaction).<br> - <strong>mutation increasing interaction strength</strong>: Region of a molecule whose mutation or deletion increases significantly interaction strength.<br> - <strong>mutation increasing interaction rate</strong>: Region of a molecule whose mutation or deletion increases significantly interaction rate (in the case of interactions inferred from enzymatic reaction).<br> - <strong>mutation decreasing interaction</strong>: Region of a molecule whose mutation or deletion decreases significantly interaction strength or rate (in the case of interactions inferred from enzymatic reaction).<br> - <strong>mutation decreasing interaction strength</strong>: Region of a molecule whose mutation or deletion decreases significantly interaction strength.<br> - <strong>mutatin decreasing interaction rate</strong>: Region of a molecule whose mutation or deletion decreases significantly interaction rate (in the case of interactions inferred from enzymatic reaction).<br> - <strong>mutation with no effect</strong>: A change in a sequence or structure in comparison to a reference entity due to a insertion, deletion or substitution event that does not have any effect over an interaction when compared with the wild-type.<br> - <strong>mutation causing an interaction</strong>: A change in a sequence or structure in comparison to a reference entity due to a insertion, deletion or substitution event that enables an interaction when compared with the wild-type, which does not interact.<br></p>
+<p>The mutations have been <strong>categorized in five distinct categories</strong> depending on their effect:<br> - <strong>increasing the interaction</strong> (+- strength / rate)<br> - <strong>decreasing the interaction</strong> (+- strength / rate)<br> - <strong>causing the interaction</strong><br> - <strong>no effect</strong><br> - <strong>unknown effect</strong> (mutation / variant)<br></p>
+</section>
+<section id="binding-informations" class="level2">
+<h2 class="anchored" data-anchor-id="binding-informations">Binding informations</h2>
+<p>Experimentally detected binding regions are defined in three distinct categories:<br> - <strong>binding-associated region</strong>: A region of a molecule or a component of a complex identified as being involved in an interaction. This may or may not be a region of the molecule in direct contact with the interacting partner.<br> - <strong>sufficient binding region</strong>: Binding will occur when this sequence range is present within a molecule or part of a molecule. This region will contain the direct binding region but may be longer.<br> - <strong>necessary binding region</strong>: A sequence range within a molecule identified as being absolutely required for an interaction. The sequence may or may not be in direct physical contact with the interaction partner.<br></p>
+<p><strong>Interfaces</strong> are domains or motifs. More informations can be found about those elements on Interpro (<a href="https://www.ebi.ac.uk/interpro/">https://www.ebi.ac.uk/interpro/</a>) and ELM respectively (<a href="http://elm.eu.org/infos/news.html">http://elm.eu.org/infos/news.html</a>).</p>
+</section>
+<section id="mutations-stats-computation" class="level2">
+<h2 class="anchored" data-anchor-id="mutations-stats-computation">Mutations stats computation</h2>
+<p>In BactMentha, a single interaction can be referenced with distinct mnt_interaction_id (unique identifiers) depending on the method that was used to identify the interaction, the confidence score… In the features table, multiple features can be associated to the same interaction (mnt_interaction_id) when multiple binding associated regions or mutations have been identify during the experiment for example. Finally, distinct mnt_interaction_id that refer to the same interaction in terms of interacting partners (one pathogen protein and one host protein) that has been detected through different technics can be related to the same mimicint interface inferrence.<br></p>
+For example:<br>
+
+
+pathogen protein
+
+
+host protein
+
+
+
+
+
+
+
+
+</section>
+</section>
+<section id="resluts" class="level1">
+<h1>Resluts</h1>
+<section id="are-mutations-more-found-in-the-host-or-pathogen-proteins-or-do-they-have-as-much-mutations-as-the-other-one-would-it-be-the-same-upon-all-the-host-organisms" class="level2">
+<h2 class="anchored" data-anchor-id="are-mutations-more-found-in-the-host-or-pathogen-proteins-or-do-they-have-as-much-mutations-as-the-other-one-would-it-be-the-same-upon-all-the-host-organisms">Are mutations more found in the host or pathogen proteins ? Or do they have as much mutations as the other one ? Would it be the same upon all the host organisms ?</h2>
+<p><em>Hypothesis : mutations appear randomly and are conserved or not. We can imagine that there will be as much conserved mutations in both categories of proteins (host and pathogens) and that it will be the same for all the host taxa.</em></p>
+<div class="center">
+<div id="0dc8de9e" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mutations_stats_files/figure-html/cell-3-output-1.png" width="593" height="411" class="figure-img"></p>
+<figcaption>Figure 1: Number of mutations on the pathogens proteins, host proteins and total number of mutations in the interaction datasets per host taxon.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see on the plot that for each host taxon, the number of mutations found in the pathogens proteins is likely the same as for the host proteins. We can see for the rat a bigger difference in the number of mutations in the pathogen and host proteins bars but it could be due to a lack of data for this specific taxon.</p>
+<section id="are-some-mutation-types-more-present-in-the-host-or-pathogens-proteins-than-in-the-other-organism-ones-what-could-that-mean-biologically" class="level2">
+<h2 class="anchored" data-anchor-id="are-some-mutation-types-more-present-in-the-host-or-pathogens-proteins-than-in-the-other-organism-ones-what-could-that-mean-biologically">Are some mutation types more present in the host or pathogens proteins than in the other organism ones ? What could that mean biologically ?</h2>
+<p><em>Hypothesis : we can imagine we’ll found more mutations related to the decrease of the interaction on the host side because evading the interaction with the pathogen would be an advantage. At the contrary we can think that more mutations related to the decrease of the interaction or causing the interaction will be found on the pathogens side.</em></p>
+<div class="center">
+<div id="3aaa8ad7" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mutations_stats_files/figure-html/cell-4-output-1.png" width="757" height="734" class="figure-img"></p>
+<figcaption>Figure 2: Categories of mutations for the host and pathogen proteins interaction datasets mutations, for (a) human, (b) mouse, (c) rat and (d) all the host taxa. There are 5 disinct categories of mutations: (cau) ‘causing an interaction’, (inc) ‘increasing the interaction’ (strength/rate), (dec) ‘decreasing the interaction’ (strength/rate), (noe) ‘no effect’ and (unk) ‘unkown effect’.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ol type="a">
+<li>We can see on the subplot (a) that most of the human pathogens interactors proteins have known mutations effects, with a majority of mutations decreasing the interaction (strength/rate). On the host proteins side, the mutations seem to also lead in the majority of the cases to a decrease of the interaction, but the mutations with no or unknown effect represent almost 40% of the mutations detected on the host proteins and more than 20% of the human proteins mutations seem to increase the interaction (strength/rate) with their pathogen interactors.<br></li>
+<li>On the second suplot, we can see that for the mouse, more than the half of the mutations detected on the pathogen proteins have an unkown or no effect on their interation with the mouse proteins. But here again, the majority of mutations on the pathogens proteins with a known effect are related to a decrease in the interactions with the host proteins. Comparing the mouse proteins mutations distribution to the human one, we can see more mutations without effect and less mutations associated to an increase of interaction (strength/rate).<br></li>
+<li>For the rat, the few detected interaction are all leading to a decreasing interaction rate or strength.<br></li>
+<li>Finally, the distribution of the mutations effect depending on if they’re found on the host protein or the pathogen protein suggests that the majority of the detected mutations are associated with a decrease of the interaction rate or strength, while a small part of those mutations can be realted to an increasing interaction (rate/strength) or have no effect, independant on the regardless of the organism to which they belong. However, the number of identified mutations vary among the host organisms. This lack of data could lead to a bias in the mutations effects distribution.<br> The fact that many known mutations are leading to a weaker interaction was expected on the host protein side to avoid the interaction with the pathogen proteins. Maybe the fact that the pathogens proteins are also related to a lower interaction strength or rate could be due to a faster mutation rate of those organisms or to a specificity for some host organisms. <strong>It would be interesting to take an example of some pathogens that are known to interact with both the human and the mouse for which we have mutation data on the pathogen protein side. We could then try to identify some pathogen proteins interacting with both host proteins ans try to see if the mutation effect is different against one and the other.</strong></li>
+</ol>
+<section id="are-certain-mutation-effects-found-more-in-the-binding-regions-and-interfaces-than-out-of-them-is-there-a-difference-between-host-and-pathogen-proteins-mutations-localisation" class="level2">
+<h2 class="anchored" data-anchor-id="are-certain-mutation-effects-found-more-in-the-binding-regions-and-interfaces-than-out-of-them-is-there-a-difference-between-host-and-pathogen-proteins-mutations-localisation">Are certain mutation effects found more in the binding regions and interfaces than out of them ? Is there a difference between host and pathogen proteins mutations localisation ?</h2>
+<p><em>Hypothesis : we can imagine that the mutations that are impacting the interaction (positively or negatively) will be found in majority inside the binding regions and interfaces, while the mutations with no effect could be found more out of those regions. We can imagine that mutations or variant without description of the effect can equally be found inside or outside those regions. And finally, we could expect the results to be the same for the pathogen and the host proteins mutations.</em></p>
+<div class="center">
+<div id="db504039" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mutations_stats_files/figure-html/cell-6-output-1.png" width="792" height="792" class="figure-img"></p>
+<figcaption>Figure 3: Localisation of mutations for the host and pathogen proteins interaction datasets mutations, for (a) human, (b) mouse, (c) rat and (d) all the host taxa, depending on the effect of the mutation. There are 5 disinct categories of mutations: (cau) ‘causing an interaction’, (inc) ‘increasing the interaction’ (strength/rate), (dec) ‘decreasing the interaction’ (strength/rate), (noe) ‘no effect’ and (unk) ‘unkown effect’. The possible location are : (in) ‘inside the binding regions or the mimicint interfaces’, (out) ‘out of them’, or (nan) ‘no binding region or interface data’.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see on figure 3 that the majority of the mutations, upon the three taxa and both pathogen and host proteins, are found inside the binding regions or interfaces while there is a notable proportion of mutations for which the exact location on the protein is unknown. We can also see that those mutations are mainly linked to a decrease in the interaction length or strength independant of the taxon the proteins belong to. We cannot clearly define if some effects are associated more to the host proteins than to the pathogen proteins due to a lack of mutations data, even if the mutations in proteins of pathogens interacting with human proteins seem to be related more to the decrease of the interaction (strength/rate).</p>
+<section id="can-we-infer-the-effects-of-some-muattions-when-there-are-no-data-of-binding-experimental-or-prediction-based-on-the-previous-results-if-yes-how-if-no-what-could-we-do-to-try-to-know-this" class="level2">
+<h2 class="anchored" data-anchor-id="can-we-infer-the-effects-of-some-muattions-when-there-are-no-data-of-binding-experimental-or-prediction-based-on-the-previous-results-if-yes-how-if-no-what-could-we-do-to-try-to-know-this">Can we infer the effects of some muattions when there are no data of binding (experimental or prediction) based on the previous results ? If yes, how ? If no, what could we do to try to know this ?</h2>
+<p>–&gt; reprendre l’ensemble des stats pour voir.</p>
+</section>
+<section id="annexe" class="level1">
+<h1>Annexe</h1>
+<p>Put all the tables here</p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
