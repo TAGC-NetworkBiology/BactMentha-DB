@@ -9,7 +9,21 @@ Contains four subfolders : **`01_Reference`**, **`02_Container`**, **`03_Script`
 ## `01_Reference folder`  
   
 The folder **`01_Reference`**, contains a subfolder **`01_DatabaseTables`** derived from the BactMentha Workflow, containing a subfolder for each taxon that is studied for now in the BactMentha Project. For now, the only three present taxons are : **9606** (*Homo sapiens*), **10090** (*Mus_musculus*), **10116** (*Rattus norvegicus*). Each taxon subfolder contains the same names files derived from the BactMentha Workflow (at the exception of the *07_mimicINT_formatting* folder that is only present for taxon *9606*).    
-The folder **`01_Reference`** also contain a subfolder **`02_WhoAnnotations`** itself containing a text file with manual currations of WHO priority and hazard group for the studied pathogenes.
+The folder **`01_Reference`** also contain a subfolder **`02_WhoAnnotations`** itself containing a text file with manual currations of WHO priority and hazard group for the studied pathogens.
+
+When the .git is pulled for the first time, this folder is empty. Get here the references files (01_DatabaseTables.2026-04-10.tar.gz and 02_WhoAnnotations.2026-04-10.tar.gz) from the following Zenodo link: https://doi.org/10.5281/zenodo.19498850. After extraction, the folder structure should be the following:
+```bash
+.
+├── 01_DatabaseTables
+│   ├── 10090
+│   ├── 10116
+│   └── 9606
+└── 02_WhoAnnotations
+    ├── bactmentha_taxa_who-hazard_annotations.csv
+    └── bactmentha_taxa_who-hazard_annotations.txt
+```
+This step is not necessary if you don't want to perform the database update but just deploy the current databse content on the website.
+
   
 ## `02_Container folder`  
   
