@@ -68,20 +68,22 @@ Extract the archive in 05_Output to get the folowing folder structure:
   ├── 01_Database
   └── 02_Archive
 ```
-
   
 ### `01_Database`  
+
+This folder contains the current files of the POSTGRESQL database. 
   
-This folder will be filled by `postgres` so that you may not have the rights on it anymore. If you want to access the containing files, you may run the following command to `recover the rights on the folder and its containing elements`:  
-  
+This folder will be modified by `postgres` if you update the database, so that you may not have the rights on it anymore. If you want to access the containing files, you may run the following command to `recover the rights on the folder and its containing elements`:  
 ```bash
 sudo setfacl -R -m u:username:rwx /Your/Path/To/.../BactMentha-DB/05_Output/01_Database
 ```  
 Don't forget to replace *username* by your personal one and to change the *path* to BactMentha-DB to fit your computer arborescence !  
+
+At first when extracting the Zenodo, the database is complete and you have access on it.
   
 ### `02_Archive`  
   
-This folder contains the archive versions of the database with a main archive folder for each version, containing different types of archive that enable the user to download only some informations. The archive folders have the following structure (where *2024_02_01* is the date of the last update of the database) :  
+This folder contains the archive versions of the database with a main archive folder for each version, containing different types of archives that enable the user to download all or only some information. The archive folders have the following structure (where *2025_08_27* is the date of the last update of the database) :  
    
 ```bash 
 .
