@@ -57,19 +57,18 @@ The content of this folder is pulled from the .git.
 
 ## `05_Output folder`  
   
-The **`05_Output`** folder contains two subfolders : **`01_Database`**, that contains the database tables created by postgresql, and **`02_Archive`** that contains the archives versions of the Database after their creation.  
-  
-If not already exists, the folder **`05_Output`** has to be created. You can open a terminal, then run the folllowing command :  
-  
+This folder will contain the database files and the database archives.
+
+Get the archive folder containing the last versions of the database (DATABASE.2026-04-13.tar.gz) from the following Zenodo link:
+https://doi.org/10.5281/zenodo.19498850
+
+Extract the archive in 05_Output to get the folowing folder structure:
 ```bash
-mkdir /Your/Path/To/.../BactMentha-DB/05_Output
-```  
-  
-Or run it directly in the **`Data`** folder with the command :  
-  
-```bash
-mkdir 05_Output
-```  
+05_Output
+  ├── 01_Database
+  └── 02_Archive
+```
+
   
 ### `01_Database`  
   
