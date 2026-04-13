@@ -1,6 +1,6 @@
 # 01_Reference
 
-Get here the references files from the Zenodo. After extraction, the folder structure should be the following:
+Get here the references files from the following Zenodo link: https://doi.org/10.5281/zenodo.19498850. After extraction, the folder structure should be the following:
 
 ```bash
 .
