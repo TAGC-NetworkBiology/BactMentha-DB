@@ -5,6 +5,10 @@ This project aims to create a database for bacteria-host protein-protein interac
 # `I. Project content`  
   
 Contains four subfolders : **`01_Reference`**, **`02_Container`**, **`03_Script`**, **`05_Output`**.  
+If you want to deploy the database localy on your computer, follow the deployment steps bellow, starting with the .git clone command:
+```bash
+git clone
+```
   
 ## `01_Reference folder`  
   
@@ -24,7 +28,6 @@ When the .git is pulled for the first time, this folder is empty. Get here the r
 ```
 This step is not necessary if you don't want to perform the database update but just deploy the current databse content on the website.
 
-  
 ## `02_Container folder`  
   
 The folder **`02_Container`** contains the dockerfiles and docker-compose files needed for the creation of the database.  
@@ -39,6 +42,8 @@ This folder also contains three subfolders for the containers construction when 
 
 This folder also contain an .env file that is hidden by default. You can make this file appear using the following command `Ctrl + H`.  
 This environment file is used to set some variables names and paths that will be used at the execution of the .yml file.
+
+The content of this folder is pulled from the .git. 
   
 ## `03_Script folder`  
   
