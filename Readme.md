@@ -41,7 +41,7 @@ The **`05_Output`** folder contains two subfolders : **`01_Database`**, that con
 If not already exists, the folder **`05_Output`** has to be created. You can open a terminal, then run the folllowing command :  
   
 ```bash
-mkdir /Your/Path/To/.../BactMentha_DB/05_Output
+mkdir /Your/Path/To/.../BactMentha-DB/05_Output
 ```  
   
 Or run it directly in the **`Data`** folder with the command :  
@@ -55,9 +55,9 @@ mkdir 05_Output
 This folder will be filled by `postgres` so that you may not have the rights on it anymore. If you want to access the containing files, you may run the following command to `recover the rights on the folder and its containing elements`:  
   
 ```bash
-sudo setfacl -R -m u:username:rwx /Your/Path/To/.../Bactmentha_DB/05_Output/01_Database
+sudo setfacl -R -m u:username:rwx /Your/Path/To/.../BactMentha-DB/05_Output/01_Database
 ```  
-Don't forget to replace *username* by your personal one and to change the *path* to BactMentha_DB to fit your computer arborescence !  
+Don't forget to replace *username* by your personal one and to change the *path* to BactMentha-DB to fit your computer arborescence !  
   
 ### `02_Archive`  
   
@@ -96,7 +96,7 @@ Here is the content of the archive .zip files:
   
 ## `Preparation`  
   
-Here is the default structure of the folder `BactMentha_DB`:  
+Here is the default structure of the folder `BactMentha-DB`:  
   
 ```bash
 .
@@ -153,9 +153,9 @@ Here is the default structure of the folder `BactMentha_DB`:
 
 ## `Modification of the .env file`  
 
-You can find the .env file at : `Your/Path/To/.../BactMentha_DB/02_Container/Compose_postgres_python/.env`.  
+You can find the .env file at : `Your/Path/To/.../BactMentha-DB/02_Container/Compose_postgres_python/.env`.  
 This file must be modified as follows:  
-- The `sections 2, 5, and 6 have to be modified` by replacing `'Your/Path/To/.../BactMentha_DB'` by your actual path to the project folder.  
+- The `sections 2, 5, and 6 have to be modified` by replacing `'Your/Path/To/.../BactMentha-DB'` by your actual path to the project folder.  
 - You `don't have to modify sections 3 and 4` unless you have changed the name of the mounted volume for python inside the compose_postgres_python.yml file.  
 - `Section 1` is setting the database connection parameters and `should not be modified`.  
 - Finally, `Section 7` enables to chose the python script to run when the python container is created by modifying the value of COMMAND to 0 (no script to run), 1 (running the tables creation if not exist), 2 (running the data insertion in the tables if they are empty) or 3 (update and archiving of the database as well as the pre-creation of the website graphs).  
@@ -165,7 +165,7 @@ This file must be modified as follows:
   
 This project is using **`docker`**. To run one of the wanted script, you first have to create the images that will be used in the docker-compose file.  
 
-Go to the following path : `/Your/Path/To/.../BactMentha_DB/02_Container/Compose_postgres_python`.
+Go to the following path : `/Your/Path/To/.../BactMentha-DB/02_Container/Compose_postgres_python`.
 
 In this folder, you will have to **`run the two images`** for *`Python`* and *`Php`* (the order of creation here doesn't import).  
 
@@ -186,7 +186,7 @@ Same as previously, you can use "." for the path to the dockerfile if you are in
   
 ## `Set the command to run for the python service in the .env file`   
 
-If the database doesn't already exists (see in 'Your/Path/To/.../BactMentha_DB/02_Output/01_Database'), you have to create it with the first script:  
+If the database doesn't already exists (see in 'Your/Path/To/.../BactMentha-DB/02_Output/01_Database'), you have to create it with the first script:  
 - Open the .env file, set the COMMAND variable to `1`, then save the file.  
 - Build the compose_postgres_python.yml file up just once (see the next section for the command line).  
 - Remove the container by using the same command as for the build and replace 'up' by 'down' at the end.  
