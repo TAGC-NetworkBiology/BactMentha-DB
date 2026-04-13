@@ -205,13 +205,13 @@
         <br>
 
         <!-- How to cite bactmentha -->
-        <div class="contact_page_subdiv_citation">
+        <!--<div class="contact_page_subdiv_citation">
             <div class="contact_centered_subtitles">How to cite BactMentha ?</div><br>
               
             <div class="centered_text_content">
                 If you are using BactMentha in your work, please cite ...
             </div><br><br>
-        </div>
+        </div>-->
 
         <br><br><br><br><br>
 
