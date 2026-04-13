@@ -7,7 +7,7 @@ This project aims to create a database for bacteria-host protein-protein interac
 Contains four subfolders : **`01_Reference`**, **`02_Container`**, **`03_Script`**, **`05_Output`**.  
 If you want to deploy the database localy on your computer, follow the deployment steps bellow, starting with the .git clone command:
 ```bash
-git clone
+git clone git@github.com:TAGC-NetworkBiology/BactMentha-DB.git
 ```
   
 ## `01_Reference folder`  
