@@ -227,9 +227,10 @@ If the database has already been created and filled at least once, you can updat
 - You can now start and use your containers (see command in the next section to start the containers).  
 
 *If you want to stop and remove your containers for any reason and don't want to run any script when building them up, then just set the COMMAND variable of the .env file to 0 before to build your containers up again.*   
+
+If you followed the steps to re-deploy this database in local and retreived the database files from the Zenodo link, you don't have to recreate the database, please keep COMMAND=0.
   
-  
-## `To run the docker compose file and make the container functionnal`
+## `Run the docker-compose file and make the container functionnal`
   
 You might now be able to run the docker-compose file (don't forget if you have change your images names to change them in the docker-compose.yml file before this step).  
 To creates those container, the only thing to do now is to run the following command (you might already be in the folder containing the docker-compose file) :  
@@ -281,7 +282,7 @@ Php and its dependencies:
 - pdo_pgsql etension for php (latest)
 - pdo_pgsql extension (latest)  
 
-Adminer:
+Adminer: not necessary
 - Adminer (latest version)  
 
 Postgresql:
