@@ -112,11 +112,7 @@ class Update():
         self.compressing_archive_files()
         print("\n##### CREATION OF WEBSITE GRAPHS #####\n")
         createGraphs(path_to_createdb, db_name, db_host_name, db_user_name, db_pw, db_port)
-        print("\nEnd of script updatedb.py. Closing connexion to PosgreSQL database.\n")
-        # print("\n##### COMPUTING MUTATIONS STATS #####\n")
-        # computeMutationsStats(path_to_createdb, db_name, db_host_name, db_user_name, db_pw, db_port)
-        # print("\nEnd of script computeMutationsStats.py. Closing connexion to PosgreSQL database.\n")
-        
+        print("\nEnd of script updatedb.py. Closing connexion to PosgreSQL database.\n")        
 
     def drop_tables(self, cdb:__module__) -> None:
         """
