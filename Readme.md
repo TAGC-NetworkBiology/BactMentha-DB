@@ -52,7 +52,9 @@ The folder **`03_Script`** contains a subfolder for each python script used in t
 - **`02_InsertData`:** contains the script for the data insertion in the database using reference files.
 - **`03_UpdateDatabase`:** contains the script for the database update and archiving and for the website graphs pre-creation.
 - **`04_Website`:** contains two subfolders : `static` and `templates`. In the `static` folder, you will find `'css'`, `'img'`, `'js'` and `'php'` folder containing respectively the css file, the images and the custom JavaScript and Php libraries for BactMentha website. The `templates` folder contains the scripts for each BactMentha Websit page.
-  
+
+The content of this folder is pulled from the .git.
+
 ## `05_Output folder`  
   
 The **`05_Output`** folder contains two subfolders : **`01_Database`**, that contains the database tables created by postgresql, and **`02_Archive`** that contains the archives versions of the Database after their creation.  
