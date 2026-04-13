@@ -114,14 +114,14 @@ Here is the content of the archive .zip files:
 - **`The row data:`** a copy a the used reference files for the last update for each taxon.  
 
 
-# `II. How to execute the scripts`  
+# `II. Database Deployment and update`  
   
 ## `Preparation`  
   
-Here is the default structure of the folder `BactMentha-DB`:  
+Here is the default structure of the folder `BactMentha-DB`: it is the structure you get if you followed the steps to retreive data from the Zenodo links and this gitHub page.
   
 ```bash
-.
+BactMentha-DB
 ├── 01_Reference
 │   ├── 01_DatabaseTables
 │   │   ├── 10090
@@ -157,19 +157,18 @@ Here is the default structure of the folder `BactMentha-DB`:
 │       │   ├── img
 │       │   ├── js
 │       │   └── php
-│       └── templates
-│           ├── bactmentha_about.php
-│           ├── bactmentha_archive.php
-│           ├── bactmentha_contact.php
-│           ├── bactmentha_data.php
-│           ├── bactmentha_doc.php
-│           ├── bactmentha_faq.php
-│           ├── bactmentha_home.php
-│           └── bactmentha_stats.php
+│       ├── bactmentha_about.php
+│       ├── bactmentha_archive.php
+│       ├── bactmentha_contact.php
+│       ├── bactmentha_data.php
+│       ├── bactmentha_doc.php
+│       ├── bactmentha_faq.php
+│       ├── bactmentha_home.php
+│       └── bactmentha_stats.php
 ├── 05_Output
 │   ├── 01_Database
 │   └── 02_Archive
-│       └── bactmentha_version_2023_07_28.zip
+│       └── bactmentha_version_2025_08_27.zip
 └── Readme.md
 ```  
 
@@ -182,6 +181,7 @@ This file must be modified as follows:
 - `Section 1` is setting the database connection parameters and `should not be modified`.  
 - Finally, `Section 7` enables to chose the python script to run when the python container is created by modifying the value of COMMAND to 0 (no script to run), 1 (running the tables creation if not exist), 2 (running the data insertion in the tables if they are empty) or 3 (update and archiving of the database as well as the pre-creation of the website graphs).  
 
+If you followed the steps for the database deployment and retreived the database files from Zenodo, you should keep COMMAND=0 in the .env file.
 
 ## `Docker images creation`
   
@@ -189,14 +189,14 @@ This project is using **`docker`**. To run one of the wanted script, you first h
 
 Go to the following path : `/Your/Path/To/.../BactMentha-DB/02_Container/Compose_postgres_python`.
 
-In this folder, you will have to **`run the two images`** for *`Python`* and *`Php`* (the order of creation here doesn't import).  
+In this folder, you will have to **`create the two images`** for *`Python`* and *`Php`* (the order of creation here doesn't import).  
 
 Creation of the Python3 image using the given dockerfile that is in the folder *01_python3*:  
 ```bash
 docker build -t bactmentha_python3 01_python3
 ```  
 
-You can change "bactmentha_python3" by any name you want to give to the image (not recommanded), but you will also have to change it in the docker-compose file (we'll talk about it later). You can use "." instead of "01_python3" if you open your terminal in the 01_python3 folder.  
+You can change "bactmentha_python3" by any name you want to give to the image (not recommanded), but you will also have to change it in the docker-compose file (we'll talk about it later). You can use "." instead of "01_python3" if you open your terminal in the 01_python3 folder, else put your path to the folder that contain the dockerfile.  
 
 Creation of the php image using the given dockerfile in the folder 02_php:  
 ```bash
@@ -205,7 +205,7 @@ docker build -t bactmentha_php 02_php
   
 Same as previously, you can use "." for the path to the dockerfile if you are in the 02_php directory.  
  
-  
+
 ## `Set the command to run for the python service in the .env file`   
 
 If the database doesn't already exists (see in 'Your/Path/To/.../BactMentha-DB/02_Output/01_Database'), you have to create it with the first script:  
