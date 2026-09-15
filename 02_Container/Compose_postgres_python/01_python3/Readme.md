@@ -16,8 +16,10 @@ This image contains :
 - plotly (latest)
 - kaleido (latest)
 - postgresql-contrib (for the connexion with the database) (latest)
+- biopython (latest)
+- git+https://github.com/evo-design/proto-tools.git (latest)
 
-*NB : `latest` versions, downloaded in date `April 2023`.*
+*NB : `latest` versions, downloaded in date `August 2026`.*
 
 ## `IMAGE BUILDING :`
 

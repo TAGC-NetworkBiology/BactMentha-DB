@@ -23,11 +23,11 @@ services:
     image: postgres:13
     restart: unless-stopped
     environment:
-      - POSTGRES_PASSWORD=$${POSTGRES_PASSWORD}
-      - POSTGRES_DB=$${POSTGRES_DB}
-      - POSTGRES_USER=$${POSTGRES_USER}
-      - DATABASE_FOLDER_PATH=$${DATABASE_FOLDER_PATH}
-      #- DB_PORTS=$${DB_PORTS} # This must be the same name that in the docker-compose.yml file
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - DATABASE_FOLDER_PATH=${DATABASE_FOLDER_PATH}
+      #- DB_PORTS=${DB_PORTS} # This must be the same name that in the docker-compose.yml file
     ports:    # Set up ports exposed for other containers to connect to # - /etc/passwd:/etc/passwd:ro
       - 5433:5432
     volumes:
@@ -41,20 +41,16 @@ services:
   app:
     container_name: bactmentha_python3
     image: bactmentha_python3
-    restart: on-failure
+    restart: "no"
     environment:
-      - POSTGRES_PASSWORD=$${POSTGRES_PASSWORD}
-      - POSTGRES_DB=$${POSTGRES_DB}
-      - POSTGRES_USER=$${POSTGRES_USER}
-      - CREATEDB_SCRIPT=$${CREATEDB_SCRIPT}
-      - INSERTDATA_SCRIPT=$${INSERTDATA_SCRIPT}
-      - UPDATEDB_SCRIPT=$${UPDATEDB_SCRIPT}
-      - CREATEDB_PATH=$${CREATEDB_PATH}
-      - INSERTDATA_PATH=$${INSERTDATA_PATH}
-      - REFERENCE_PATH=$${REFERENCE_PATH}
-      - ARCHIVE_PATH=$${ARCHIVE_PATH}
-      - PROJECT_PATH=$${PROJECT_PATH}
-      - COMMAND=$${COMMAND}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - CREATEDB_SCRIPT=${CREATEDB_SCRIPT}
+      - INSERTDATA_SCRIPT=${INSERTDATA_SCRIPT}
+      - UPDATEDB_SCRIPT=${UPDATEDB_SCRIPT}
+      - PROJECT_PATH=${PROJECT_PATH}
+      - COMMAND=${COMMAND}
     depends_on:
       - db
     volumes:
@@ -63,16 +59,16 @@ services:
       bash -c "
         case \$COMMAND in
           1)
-            python3 \${CREATEDB_SCRIPT} --dbn=\${POSTGRES_DB} --dbh='db' --dbu=\${POSTGRES_USER} --dbpw=\${POSTGRES_PASSWORD} --dbpt='5432'
+            python3 \$CREATEDB_SCRIPT --dbn=\$POSTGRES_DB --dbh='db' --dbu=\$POSTGRES_USER --dbpw=\$POSTGRES_PASSWORD --dbpt='5432'
             ;;
           2)
-            python3 ${INSERTDATA_SCRIPT} --dbn=${POSTGRES_DB} --dbh='db' --dbu=${POSTGRES_USER} --dbpw=${POSTGRES_PASSWORD} --dbpt='5432' --refpath=${REFERENCE_PATH} --cdbpath=${CREATEDB_PATH} --whopath=\${WHO_ANNOTATIONS_PATH}
+            python3 \$INSERTDATA_SCRIPT --dbn=\$POSTGRES_DB --dbh='db' --dbu=\$POSTGRES_USER --dbpw=\$POSTGRES_PASSWORD --dbpt='5432'
             ;;
           3)
-            python3 \${UPDATEDB_SCRIPT} --dbn=\${POSTGRES_DB} --dbh='db' --dbu=\${POSTGRES_USER} --dbpw=\${POSTGRES_PASSWORD} --dbpt='5432' --refpath=\${REFERENCE_PATH} --arcpath=\${ARCHIVE_PATH} --cdbpath=\${CREATEDB_PATH} --idbpath=\${INSERTDATA_PATH} --whopath=\${WHO_ANNOTATIONS_PATH}
+            python3 \$UPDATEDB_SCRIPT --dbn=\$POSTGRES_DB --dbh='db' --dbu=\$POSTGRES_USER --dbpw=\$POSTGRES_PASSWORD --dbpt='5432'
             ;;
           *)
-            echo 'No command specified or invalid command. Stoping bactmentha_python3 container.'
+            echo 'No command specified or invalid command. Stopping bactmentha_python3 container.'
             ;;
         esac
       "
