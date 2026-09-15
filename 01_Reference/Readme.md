@@ -1,6 +1,6 @@
 # 01_Reference
 
-Get here the references files (01_DatabaseTables.2026-04-10.tar.gz and 02_WhoAnnotations.2026-04-10.tar.gz) from the following Zenodo link: https://doi.org/10.5281/zenodo.19498850. After extraction, the folder structure should be the following:
+Get here the references files (01_Reference_BactMentha_2026_09_14.tar.gz) from the following Zenodo link: https://doi.org/10.5281/zenodo.19498850. After extraction, the folder structure should be the following:
 
 ```bash
 .
@@ -9,8 +9,11 @@ Get here the references files (01_DatabaseTables.2026-04-10.tar.gz and 02_WhoAnn
 │   ├── 10116
 │   └── 9606
 └── 02_WhoAnnotations
-    ├── bactmentha_taxa_who-hazard_annotations.csv
-    └── bactmentha_taxa_who-hazard_annotations.txt
+│   └── ...
+└── 03_AF3_predictions
+│   └── ...
+└── 04_Cellular_component
+    └── ...
 ```
 
 This step is not necessary if you don't want to perform the database update but just deploy the current databse content on the website.
