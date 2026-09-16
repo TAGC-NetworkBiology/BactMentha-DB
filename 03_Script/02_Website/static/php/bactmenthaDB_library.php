@@ -352,77 +352,116 @@ function findLastUpdate($dbconn) {
     return $date ;
 }
 
-function getAllInteractionsData($dbconn) {
+function getAllStats($dbconn) {
     $query = "
-        SELECT taxon, COUNT(DISTINCT mnt_interaction_id) AS num_interactions
-        FROM (
-            SELECT 'global' AS taxon, mnt_interaction_id FROM interaction_full
+        WITH all_data AS (
+            SELECT 'global' AS taxon, mnt_interaction_id, interactor_ida, interactor_idb, taxon_interactor_ida
+            FROM interaction_full
+
             UNION ALL
-            SELECT 'homo_sapiens', mnt_interaction_id FROM view_interaction_full_homo_sapiens
+
+            SELECT 'homo_sapiens', mnt_interaction_id, interactor_ida, interactor_idb, taxon_interactor_ida
+            FROM view_interaction_full_homo_sapiens
+
             UNION ALL
-            SELECT 'mus_musculus', mnt_interaction_id FROM view_interaction_full_mus_musculus
+
+            SELECT 'mus_musculus', mnt_interaction_id, interactor_ida, interactor_idb, taxon_interactor_ida
+            FROM view_interaction_full_mus_musculus
+
             UNION ALL
-            SELECT 'rattus_norvegicus', mnt_interaction_id FROM view_interaction_full_rattus_norvegicus
-        ) t
-        GROUP BY taxon;
+
+            SELECT 'rattus_norvegicus', mnt_interaction_id, interactor_ida, interactor_idb, taxon_interactor_ida
+            FROM view_interaction_full_rattus_norvegicus
+        ),
+
+        pair_data AS (
+            SELECT DISTINCT
+                taxon,
+                interactor_ida,
+                interactor_idb,
+                taxon_interactor_ida
+            FROM all_data
+        ),
+
+        stats_entries AS (
+            SELECT
+                taxon,
+                'entries' AS by,
+                COUNT(DISTINCT mnt_interaction_id) AS num_interactions,
+                COUNT(DISTINCT interactor_ida) AS num_patho_prots,
+                COUNT(DISTINCT interactor_idb) AS num_host_prots,
+                COUNT(DISTINCT taxon_interactor_ida) AS num_strains
+            FROM all_data
+            GROUP BY taxon
+        ),
+
+        stats_pairs AS (
+            SELECT
+                taxon,
+                'pairs' AS by,
+                COUNT(*) AS num_interactions,
+                COUNT(DISTINCT interactor_ida) AS num_patho_prots,
+                COUNT(DISTINCT interactor_idb) AS num_host_prots,
+                COUNT(DISTINCT taxon_interactor_ida) AS num_strains
+            FROM pair_data
+            GROUP BY taxon
+        ),
+
+        stats AS (
+            SELECT * FROM stats_entries
+            UNION ALL
+            SELECT * FROM stats_pairs
+        ),
+
+        families AS (
+            SELECT
+                ad.taxon,
+                COUNT(DISTINCT ut.taxon_family) AS num_families
+            FROM (
+                SELECT DISTINCT taxon, taxon_interactor_ida
+                FROM all_data
+            ) ad
+            LEFT JOIN uniprot_taxonomy ut
+                ON ad.taxon_interactor_ida = ut.taxon_id
+            GROUP BY ad.taxon
+        )
+
+        SELECT
+            s.taxon,
+            s.by,
+            s.num_interactions,
+            s.num_patho_prots,
+            s.num_host_prots,
+            s.num_strains,
+            f.num_families
+        FROM stats s
+        LEFT JOIN families f
+            ON s.taxon = f.taxon
+        ORDER BY
+            CASE s.taxon
+                WHEN 'global' THEN 1
+                WHEN 'homo_sapiens' THEN 2
+                WHEN 'mus_musculus' THEN 3
+                WHEN 'rattus_norvegicus' THEN 4
+            END,
+            CASE s.by
+                WHEN 'entries' THEN 1
+                WHEN 'pairs' THEN 2
+            END;
     ";
-    $result = pg_query($dbconn, $query) or die("Error:" . pg_last_error());
+
+    $result = pg_query($dbconn, $query) or die("Error: " . pg_last_error());
+
     $data = [];
+
     while ($row = pg_fetch_assoc($result)) {
-        $data[$row['taxon']] = $row['num_interactions'];
-    }
-    return $data;
-}
+        $taxon = $row['taxon'];
+        $by = $row['by'];
 
-function getAllNumberOfProts($dbconn) {
-    $query = "
-        SELECT taxon, 
-               COUNT(DISTINCT interactor_ida) AS num_patho_prots, 
-               COUNT(DISTINCT interactor_idb) AS num_host_prots
-        FROM (
-            SELECT 'global' AS taxon, interactor_ida, interactor_idb FROM interaction_full
-            UNION ALL
-            SELECT 'homo_sapiens', interactor_ida, interactor_idb FROM view_interaction_full_homo_sapiens
-            UNION ALL
-            SELECT 'mus_musculus', interactor_ida, interactor_idb FROM view_interaction_full_mus_musculus
-            UNION ALL
-            SELECT 'rattus_norvegicus', interactor_ida, interactor_idb FROM view_interaction_full_rattus_norvegicus
-        ) t
-        GROUP BY taxon;
-    ";
-    $result = pg_query($dbconn, $query) or die("Error:" . pg_last_error());
-    $data = [];
-    while ($row = pg_fetch_assoc($result)) {
-        $data[$row['taxon']] = [
-            'A' => $row['num_patho_prots'],  // Pathogen proteins
-            'B' => $row['num_host_prots']    // Host proteins
-        ];
-    }
-    return $data;
-}
-
-function getNumberOfBactStrainsAndFamPerTaxon($dbconn) {
-    $taxa = [
-        'global' => 'interaction_full',
-        'homo_sapiens' => 'view_interaction_full_homo_sapiens',
-        'mus_musculus' => 'view_interaction_full_mus_musculus',
-        'rattus_norvegicus' => 'view_interaction_full_rattus_norvegicus'
-    ];
-
-    $data = [];
-
-    foreach ($taxa as $label => $table) {
-        $query = "
-            SELECT 
-                COUNT(DISTINCT i.taxon_interactor_idA) AS num_strains,
-                COUNT(DISTINCT u.taxon_family) AS num_families
-            FROM $table i
-            LEFT JOIN uniprot_taxonomy u ON i.taxon_interactor_idA = u.taxon_id
-        ";
-        $result = pg_query($dbconn, $query) or die("Error in joined query ($label): " . pg_last_error());
-        $row = pg_fetch_assoc($result);
-
-        $data[$label] = [
+        $data[$taxon][$by] = [
+            'interactions' => $row['num_interactions'],
+            'patho_prots' => $row['num_patho_prots'],
+            'host_prots' => $row['num_host_prots'],
             'strains' => $row['num_strains'],
             'families' => $row['num_families']
         ];
@@ -430,6 +469,87 @@ function getNumberOfBactStrainsAndFamPerTaxon($dbconn) {
 
     return $data;
 }
+
+
+
+// function getAllInteractionsData($dbconn) {
+//     $query = "
+//         SELECT taxon, COUNT(DISTINCT mnt_interaction_id) AS num_interactions
+//         FROM (
+//             SELECT 'global' AS taxon, mnt_interaction_id FROM interaction_full
+//             UNION ALL
+//             SELECT 'homo_sapiens', mnt_interaction_id FROM view_interaction_full_homo_sapiens
+//             UNION ALL
+//             SELECT 'mus_musculus', mnt_interaction_id FROM view_interaction_full_mus_musculus
+//             UNION ALL
+//             SELECT 'rattus_norvegicus', mnt_interaction_id FROM view_interaction_full_rattus_norvegicus
+//         ) t
+//         GROUP BY taxon;
+//     ";
+//     $result = pg_query($dbconn, $query) or die("Error:" . pg_last_error());
+//     $data = [];
+//     while ($row = pg_fetch_assoc($result)) {
+//         $data[$row['taxon']] = $row['num_interactions'];
+//     }
+//     return $data;
+// }
+
+// function getAllNumberOfProts($dbconn) {
+//     $query = "
+//         SELECT taxon, 
+//                COUNT(DISTINCT interactor_ida) AS num_patho_prots, 
+//                COUNT(DISTINCT interactor_idb) AS num_host_prots
+//         FROM (
+//             SELECT 'global' AS taxon, interactor_ida, interactor_idb FROM interaction_full
+//             UNION ALL
+//             SELECT 'homo_sapiens', interactor_ida, interactor_idb FROM view_interaction_full_homo_sapiens
+//             UNION ALL
+//             SELECT 'mus_musculus', interactor_ida, interactor_idb FROM view_interaction_full_mus_musculus
+//             UNION ALL
+//             SELECT 'rattus_norvegicus', interactor_ida, interactor_idb FROM view_interaction_full_rattus_norvegicus
+//         ) t
+//         GROUP BY taxon;
+//     ";
+//     $result = pg_query($dbconn, $query) or die("Error:" . pg_last_error());
+//     $data = [];
+//     while ($row = pg_fetch_assoc($result)) {
+//         $data[$row['taxon']] = [
+//             'A' => $row['num_patho_prots'],  // Pathogen proteins
+//             'B' => $row['num_host_prots']    // Host proteins
+//         ];
+//     }
+//     return $data;
+// }
+
+// function getNumberOfBactStrainsAndFamPerTaxon($dbconn) {
+//     $taxa = [
+//         'global' => 'interaction_full',
+//         'homo_sapiens' => 'view_interaction_full_homo_sapiens',
+//         'mus_musculus' => 'view_interaction_full_mus_musculus',
+//         'rattus_norvegicus' => 'view_interaction_full_rattus_norvegicus'
+//     ];
+
+//     $data = [];
+
+//     foreach ($taxa as $label => $table) {
+//         $query = "
+//             SELECT 
+//                 COUNT(DISTINCT i.taxon_interactor_idA) AS num_strains,
+//                 COUNT(DISTINCT u.taxon_family) AS num_families
+//             FROM $table i
+//             LEFT JOIN uniprot_taxonomy u ON i.taxon_interactor_idA = u.taxon_id
+//         ";
+//         $result = pg_query($dbconn, $query) or die("Error in joined query ($label): " . pg_last_error());
+//         $row = pg_fetch_assoc($result);
+
+//         $data[$label] = [
+//             'strains' => $row['num_strains'],
+//             'families' => $row['num_families']
+//         ];
+//     }
+
+//     return $data;
+// }
 
 
 // __________________________________________________________________________________________ //

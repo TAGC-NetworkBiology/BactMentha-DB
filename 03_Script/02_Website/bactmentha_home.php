@@ -242,12 +242,19 @@
 
           $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
           or die('Unable to connect to the database : ' . pg_last_error());    // starting postgres connection
+          $stats = getAllStats($dbconn);
 
-          $interaction_data = getAllInteractionsData($dbconn);
-          $nbInts_global = $interaction_data['global'];
-          $nbInts_human = $interaction_data['homo_sapiens'];
-          $nbInts_mouse = $interaction_data['mus_musculus'];
-          $nbInts_rat = $interaction_data['rattus_norvegicus'];
+          // entries
+          $nbInts_global = $stats['global']['entries']['interactions'];
+          $nbInts_human = $stats['homo_sapiens']['entries']['interactions'];
+          $nbInts_mouse = $stats['mus_musculus']['entries']['interactions'];
+          $nbInts_rat = $stats['rattus_norvegicus']['entries']['interactions'];
+
+          // pairs
+          $nbPairs_global = $stats['global']['pairs']['interactions'];
+          $nbPairs_human = $stats['homo_sapiens']['pairs']['interactions'];
+          $nbPairs_mouse = $stats['mus_musculus']['pairs']['interactions'];
+          $nbPairs_rat = $stats['rattus_norvegicus']['pairs']['interactions'];
 
           // NEWS DIV
           echo("<div class='main_second_subpart_home'>
@@ -267,10 +274,10 @@
                   <br><br>
                 <div class='home_news_title2'><img src='/static/img/icons/reshot-icon-interaction.svg' class='home_news_logos2'>  Number of interactions by host: </div>
                 <div class='home_news_bar2'></div><br>
-                  <label class='default_text'><strong>Human:</strong> ".$nbInts_human."</label><br>
-                  <label class='default_text'><strong>Mouse:</strong> ".$nbInts_mouse."</label><br>
-                  <label class='default_text'><strong>Rat:</strong> ".$nbInts_rat."</label><br><br>
-                  <label class='default_text'><strong>TOTAL:</strong> ".$nbInts_global."</label><br>
+                  <label class='default_text'><strong>Human:</strong> ".$nbPairs_human." binary interactions (".$nbInts_human." entries)</label><br>
+                  <label class='default_text'><strong>Mouse:</strong> ".$nbPairs_mouse." binary interactions (".$nbInts_mouse." entries)</label><br>
+                  <label class='default_text'><strong>Rat:</strong> ".$nbPairs_rat." binary interactions (".$nbInts_rat." entries)</label><br><br>
+                  <label class='default_text'><strong>TOTAL:</strong> ".$nbPairs_global." binary interactions (".$nbInts_global." entries)</label><br>
                   <br>
                   <a class='table_link' href='/Statistics' target='_blank'> Detailed statistics </a>
               </div>

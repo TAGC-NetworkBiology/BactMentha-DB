@@ -46,6 +46,7 @@
     <meta charset="utf-8">                                     <!-- Encoding -->
     <title>Statistics-BactMentha</title>                               <!-- Title that will appear in the window tab -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
     <script type="text/javascript" src="/static/js/bactmenthaDB_library.js"></script>
     <!-- include min JQuery to use datatable -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -209,36 +210,47 @@
           // ________________________________________________
           // First graph for number of interactions per taxon
 
-          $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres') or die('Unable to connect to the database : ' . pg_last_error());    // starting postgres connection
-
-          $interaction_data = getAllInteractionsData($dbconn);
-          $proteins_numbers = getAllNumberOfProts($dbconn);
-          $number_of_bact_strains_families = getNumberOfBactStrainsAndFamPerTaxon($dbconn);
-          
+          $dbconn = pg_connect(
+              'host=db port=5432 dbname=bactmentha_db user=postgres password=postgres'
+          ) or die('Unable to connect to the database : ' . pg_last_error());
+          $stats = getAllStats($dbconn);
           pg_close($dbconn);
 
-          $nbInts_global = $interaction_data['global'];
-          $nbInts_human = $interaction_data['homo_sapiens'];
-          $nbInts_mouse = $interaction_data['mus_musculus'];
-          $nbInts_rat = $interaction_data['rattus_norvegicus'];
+          $nbInts_global = $stats['global']['entries']['interactions'];
+          $nbPairs_global = $stats['global']['pairs']['interactions'];
+          $nbInts_human = $stats['homo_sapiens']['entries']['interactions'];
+          $nbPairs_human = $stats['homo_sapiens']['pairs']['interactions'];
+          $nbInts_mouse = $stats['mus_musculus']['entries']['interactions'];
+          $nbPairs_mouse = $stats['mus_musculus']['pairs']['interactions'];
+          $nbInts_rat = $stats['rattus_norvegicus']['entries']['interactions'];
+          $nbPairs_rat = $stats['rattus_norvegicus']['pairs']['interactions'];
 
-          $nb_host_prots_global = $proteins_numbers['global']['B'];
-          $nb_host_prots_human = $proteins_numbers['homo_sapiens']['B'];
-          $nb_host_prots_mouse = $proteins_numbers['mus_musculus']['B'];
-          $nb_host_prots_rat = $proteins_numbers['rattus_norvegicus']['B'];
-          $nb_patho_prots_global = $proteins_numbers['global']['A'];
-          $nb_patho_prots_human = $proteins_numbers['homo_sapiens']['A'];
-          $nb_patho_prots_mouse = $proteins_numbers['mus_musculus']['A'];
-          $nb_patho_prots_rat = $proteins_numbers['rattus_norvegicus']['A'];
+          $nb_host_prots_global = $stats['global']['entries']['host_prots'];
+          $nb_host_pairs_global = $stats['global']['pairs']['host_prots'];
+          $nb_host_prots_human = $stats['homo_sapiens']['entries']['host_prots'];
+          $nb_host_pairs_human = $stats['homo_sapiens']['pairs']['host_prots'];
+          $nb_host_prots_mouse = $stats['mus_musculus']['entries']['host_prots'];
+          $nb_host_pairs_mouse = $stats['mus_musculus']['pairs']['host_prots'];
+          $nb_host_prots_rat = $stats['rattus_norvegicus']['entries']['host_prots'];
+          $nb_host_pairs_rat = $stats['rattus_norvegicus']['pairs']['host_prots'];
 
-          $nb_bact_strains_global = $number_of_bact_strains_families['global']['strains'];
-          $nb_bact_strains_human = $number_of_bact_strains_families['homo_sapiens']['strains'];
-          $nb_bact_strains_mouse = $number_of_bact_strains_families['mus_musculus']['strains'];
-          $nb_bact_strains_rat = $number_of_bact_strains_families['rattus_norvegicus']['strains'];
-          $nb_bact_families_global = $number_of_bact_strains_families['global']['families'];
-          $nb_bact_families_human = $number_of_bact_strains_families['homo_sapiens']['families'];
-          $nb_bact_families_mouse = $number_of_bact_strains_families['mus_musculus']['families'];
-          $nb_bact_families_rat = $number_of_bact_strains_families['rattus_norvegicus']['families'];
+          $nb_patho_prots_global = $stats['global']['entries']['patho_prots'];
+          $nb_patho_pairs_global = $stats['global']['pairs']['patho_prots'];
+          $nb_patho_prots_human = $stats['homo_sapiens']['entries']['patho_prots'];
+          $nb_patho_pairs_human = $stats['homo_sapiens']['pairs']['patho_prots'];
+          $nb_patho_prots_mouse = $stats['mus_musculus']['entries']['patho_prots'];
+          $nb_patho_pairs_mouse = $stats['mus_musculus']['pairs']['patho_prots'];
+          $nb_patho_prots_rat = $stats['rattus_norvegicus']['entries']['patho_prots'];
+          $nb_patho_pairs_rat = $stats['rattus_norvegicus']['pairs']['patho_prots'];
+
+          $nb_bact_strains_global = $stats['global']['entries']['strains'];
+          $nb_bact_strains_human = $stats['homo_sapiens']['entries']['strains'];
+          $nb_bact_strains_mouse = $stats['mus_musculus']['entries']['strains'];
+          $nb_bact_strains_rat = $stats['rattus_norvegicus']['entries']['strains'];
+          $nb_bact_families_global = $stats['global']['entries']['families'];
+          $nb_bact_families_human = $stats['homo_sapiens']['entries']['families'];
+          $nb_bact_families_mouse = $stats['mus_musculus']['entries']['families'];
+          $nb_bact_families_rat = $stats['rattus_norvegicus']['entries']['families'];
 
           echo("<!-- First graph for number of interactions per taxon -->
           <div class='stats_main_part_div'>
@@ -248,11 +260,11 @@
                   You can also <strong><a href='#stat_table_selector_form' style='color:#429E9D'><u>display a table</u></a></strong> by 
                   selecting a specific statistics for a taxon (or for all taxa).
                   <br><br>
-                  The BactMentha database stores <strong>$nbInts_global bacteria-host protein-protein interactions (PPIs) entries</strong>
-                  distributed as follows:<br>
-                   • <strong>$nbInts_human</strong> interactions (<strong>human</strong>),<br>
-                   • <strong>$nbInts_mouse</strong> interactions (<strong>mouse</strong>),<br>
-                   • <strong>$nbInts_rat</strong> interactions (<strong>rat</strong>).
+                  The BactMentha database stores <strong>$nbInts_global bacteria-host protein-protein interactions (PPIs) entries</strong> 
+                  for <strong>$nbPairs_global binary interactions</strong> distributed as follows:<br>
+                   • <strong>$nbInts_human</strong> entries for <strong>$nbPairs_human</strong> interactions (<strong>human</strong>),<br>
+                   • <strong>$nbInts_mouse</strong> entries for <strong>$nbPairs_mouse</strong> interactions (<strong>mouse</strong>),<br>
+                   • <strong>$nbInts_rat</strong> entries for <strong>$nbPairs_rat</strong> interactions (<strong>rat</strong>).
                   <br><br>
                   These interactions involve <strong>$nb_host_prots_global distinct host proteins</strong> (respectively 
                   $nb_host_prots_human for human, $nb_host_prots_mouse for mice and $nb_host_prots_rat for rat) and 
@@ -449,41 +461,28 @@
 <script>
 
   document.querySelectorAll('.Chart_class').forEach(container => {
-    const chart_id = container.id;
-    const total_height = parseInt(container.style.height);
-    const plot_height = total_height - 20;
-    fetch(`/static/img/graphs/${chart_id}.html`)
-      .then(response => {
-        return response.text();
-      })
-      .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        container.innerHTML = doc.body.innerHTML;
-        container.querySelectorAll('script').forEach(oldScript => {
-          const newScript = document.createElement('script');
-          if (oldScript.src) {
-            newScript.src = oldScript.src;
-          } else {
-            newScript.textContent = oldScript.textContent;
-          }
-          oldScript.replaceWith(newScript);
-        });
-        const plot = container.querySelector('.plotly-graph-div');
-        if (plot) {
-          plot.parentElement.style.height = `${plot_height}px`;
-          plot.parentElement.style.width = '100%';
-          plot.style.height = `${plot_height}px`;
-          plot.style.width = '100%';
-          Plotly.relayout(plot, {
-            width: container.clientWidth,
-            height: plot_height
+      const chart_id = container.id;
+      const total_height = parseInt(container.style.height);
+      const plot_height = total_height - 20;
+
+      fetch(`/static/img/graphs/pairs/${chart_id}.json`)
+          .then(response => response.json())
+          .then(fig => {
+              Plotly.newPlot(
+                  container,
+                  fig.data,
+                  fig.layout,
+                  fig.config
+              );
+
+              Plotly.relayout(container, {
+                  width: container.clientWidth,
+                  height: plot_height
+              });
+          })
+          .catch(error => {
+              console.error(chart_id, error);
           });
-        }
-      })
-      .catch(error => {
-        console.error(chart_id, error);
-      });
   });
 
   $(document).ready(function () {
