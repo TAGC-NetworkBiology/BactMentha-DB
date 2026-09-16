@@ -248,7 +248,7 @@
                   You can also <strong><a href='#stat_table_selector_form' style='color:#429E9D'><u>display a table</u></a></strong> by 
                   selecting a specific statistics for a taxon (or for all taxa).
                   <br><br>
-                  The BactMentha database stores <strong>$nbInts_global bacteria-host protein-protein interactions (PPIs)</strong>
+                  The BactMentha database stores <strong>$nbInts_global bacteria-host protein-protein interactions (PPIs) entries</strong>
                   distributed as follows:<br>
                    • <strong>$nbInts_human</strong> interactions (<strong>human</strong>),<br>
                    • <strong>$nbInts_mouse</strong> interactions (<strong>mouse</strong>),<br>

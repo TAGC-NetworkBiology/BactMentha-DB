@@ -1,16 +1,11 @@
 # 05_Output
 
-This folder will contain the database files and the database archives.
+This folder strores the BactMentha database files and the database archives after deployment.
 
-Get the archive folder containing the last versions of the database (02_Output_BactMentha_2026_09_14.tar.gz) from the following Zenodo link:
-https://doi.org/10.5281/zenodo.19498850
-
-
-Extract the archive in 05_Output to get the folowing folder structure:
 ```bash
 05_Output
   ├── 01_Database
   └── 02_Archive
 ```
 
-
+The BactMentha Database formated tables and the POSTGRESQL command file to recreate the database can be downloaded directly on the **BactMentha Download page** at `https://bactmentha.tagc.univ-amu.fr/Download` or can be downloaded on the **Zenodo** Page at `https://doi.org/10.5281/zenodo.22769706`. Complete or specific references archives files are only available on the website as they are redundant with the database references files already available on Zenodo.
