@@ -241,27 +241,72 @@ function recoverDisplayedLinesBmIds(tableId, AllBmInteractionIds) {
 // Calls the files creation with the displayed bm_id only to process the query
 function downloadAllInteractionData(tableId) {
     const BmIdsToExport = recoverDisplayedLinesBmIds(tableId, AllBmInteractionIds);
-    // Perform an AJAX request to send the filter values to the server
+
+    console.log("BmIdsToExport:", BmIdsToExport);
+
     $.ajax({
         type: "POST",
         url: window.location.href,
-        data: { BmIdsToExport: BmIdsToExport}, // Pass the filter values and download token to the server
-        success: function (response) {
-            alert('Loading the data can take a few minutes. Thank you for your comprehension.');
-            window.location.reload(true);
+        data: {BmIdsToExport: BmIdsToExport},
+        dataType: "json",
+        beforeSend: function() {
+            $('#downloadStatus')
+                .text('Your files are being prepared. This may take a few minutes.')
+                .show();
         },
-        error: function (error) {
-            console.error("Error sending mnt_interaction_ids to server: ", error);
+        success: function(files) {
+            var downloadStarted = downloadFiles(files);
+            if (downloadStarted) {
+                $('#downloadStatus')
+                    .text('Your files are ready. Download starting...')
+                    .show();
+                setTimeout(function() {
+                    $('#downloadStatus').fadeOut();
+                }, 3000);
+            } else {
+                $('#downloadStatus').fadeOut();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX error:", status, error);
+            console.error("HTTP status:", xhr.status);
+            console.error("PHP response:", xhr.responseText);
+            $('#downloadStatus')
+                .text('An error occurred while preparing your files.')
+                .show();
         }
     });
 }
 
+// function downloadAllInteractionData(tableId) {
+//     const BmIdsToExport = recoverDisplayedLinesBmIds(tableId, AllBmInteractionIds);
+//     // Perform an AJAX request to send the filter values to the server
+//     $.ajax({
+//         type: "POST",
+//         url: window.location.href,
+//         data: { BmIdsToExport: BmIdsToExport}, // Pass the filter values and download token to the server
+//         success: function (response) {
+//             alert('Loading the data can take a few minutes. Thank you for your comprehension.');
+//             window.location.reload(true);
+//         },
+//         error: function (error) {
+//             console.error("Error sending mnt_interaction_ids to server: ", error);
+//         }
+//     });
+// }
+
 // Download the files that were created using php
 function downloadFiles(files) {
     var confirmDownload = confirm(files.length + ' CSV files are going to be downloaded. Do you want to continue?');
+
+    if (!confirmDownload) {
+        return false;
+    }
+
     if (confirmDownload) {
-        alert('Your download has started. Please check your download folder.');
-        files.forEach(function (file) {
+        // alert('Your download has started. Please check your download folder.');
+
+        files.forEach(function(file) {
             var link = document.createElement('a');
             link.href = '/tmp/bactmentha_download/' + file;
             link.download = file;
@@ -270,17 +315,7 @@ function downloadFiles(files) {
             document.body.removeChild(link);
         });
     }
-    $.ajax({
-        type: "GET",
-        url: window.location.href, // Current PHP file
-        data: { unsetBmIdsToExport: true}, // Specific parameter to trigger the unset
-        success: function(response) {
-            window.location.reload(true);
-        },
-        error: function(error) {
-            console.error("Error unsetting download token on server: ", error);
-        }
-    });
+    return true;
 }
 
 

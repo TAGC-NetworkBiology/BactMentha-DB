@@ -43,27 +43,32 @@
 <!--=================================================================== HEAD ====================================================================-->
 <!--=============================================================================================================================================-->
 <head>
-    <meta charset="utf-8">                                     <!-- Encoding -->
-    <title>Statistics-BactMentha</title>                               <!-- Title that will appear in the window tab -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <meta charset="utf-8">
+    <title>Statistics-BactMentha</title>
+    <!-- D3 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
-    <script type="text/javascript" src="/static/js/bactmenthaDB_library.js"></script>
-    <!-- include min JQuery to use datatable -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <!-- Include datatable file -->
-    <script type="text/javascript" src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <!-- Include JS for dataTable export -->
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.0/js/buttons.html5.min.js"></script>
-    <!-- Include JS for chart graphs -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <!-- Include the bactmentha CSS file (in the same folder) -->
-    <link rel="stylesheet" href="/static/css/bactmenthaDB_stylesheet.css" /> 
-    <!-- Include the CSS file for datatable -->
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <!-- BactMentha JS -->
+    <script src="/static/js/bactmenthaDB_library.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/3.2.5/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.5/js/buttons.html5.min.js"></script>
+    <!-- JSZip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- pdfmake -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <!-- BactMentha CSS -->
+    <link rel="stylesheet" href="/static/css/bactmenthaDB_stylesheet.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
   </head>
 <!--=============================================================================================================================================-->
 <!--=================================================================== BODY ====================================================================-->
@@ -145,7 +150,7 @@
 
         if (!empty($table_name)) {                                              // Only if a table has been selected (in get or session variable)
           $find_col_query = 'SELECT * FROM '.$table_name.' LIMIT 0;';                 // Taking the table without the data
-          $find_col_result = pg_query($find_col_query) or die('Error in the query execution : ' . pg_last_error());
+          $find_col_result = pg_query($dbconn, $find_col_query) or die('Error in the query execution : ' . pg_last_error());
           $col_nb = pg_num_fields($find_col_result);                                  // take the number of columns in the table
           $col_list = array();                                                        // empty list that will contain the column names
 
@@ -170,7 +175,7 @@
             // definition of the sql query
             $sql_query = "SELECT $selectColQuery FROM ".$table_name;                  // Query to execute : select all the data from the table
             // execution of the sql query
-            $query_result = pg_query($sql_query) or die('Error in the query execution : ' . pg_last_error());
+            $query_result = pg_query($dbconn, $sql_query) or die('Error in the query execution : ' . pg_last_error());
 
             // HEADER                                                                 // Displaying the resulting table in HTML
             echo("<table id='stats_table' class='display stripe table_php'>\n<thead><tr>"); // Creation of the table and its header ()
@@ -181,7 +186,7 @@
               $col_name = pg_field_name($query_result, $i);                           // takes the new col name
               $disp_colname = MapColnameDispname($col_name);                          // replace underscores by spaces in headers names
               // display the col name in a new cell on same line and a select filter  //onchange='filterSelectedRows()' name='".$col_name."_items[]'
-              echo "\n<th col-id='${col_name}' col-index='".($i+1)."'>${disp_colname}</th>" ;
+              echo "\n<th col-id='{$col_name}' col-index='".($i+1)."'>{$disp_colname}</th>" ;
               
               $dispColList[] = $col_name ;                                            // add the column to display to be used as key
             }

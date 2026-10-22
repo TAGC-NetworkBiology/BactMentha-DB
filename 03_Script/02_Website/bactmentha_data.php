@@ -36,30 +36,48 @@
     // CALLS THE REQUIRED SCRIPTS FOR THE FUNCTIONS
     include '../static/php/bactmenthaDB_library.php' ;
     include 'static/php/bactmenthaDB_library.php' ;
+
+    // ______________________________________
+    // DOWNLOAD FILES PART
+    if (isset($_POST["BmIdsToExport"])) {
+        $files = downloadSearchCsvFiles($_POST["BmIdsToExport"]);
+        header('Content-Type: application/json');
+        echo $files;
+        exit;
+    }
 ?>
 <!DOCTYPE html>
 <html>
 <!--=============================================================================================================================================-->
 <!--=================================================================== HEAD ====================================================================-->
 <!--=============================================================================================================================================-->
-  <head>
-    <meta charset="utf-8">                                     <!-- Encoding -->
-    <title>Browse-BactMentha</title>                               <!-- Title that will appear in the window tab -->
-    <script type="text/javascript" src="/static/js/bactmenthaDB_library.js"></script>
-    <!-- include min JQuery to use datatable -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <!-- Include datatable file -->
-    <script type="text/javascript" src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <!-- Include JS for dataTable export -->
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.0/js/buttons.html5.min.js"></script>
-    <!-- Include the bactmentha CSS file (in the same folder) -->
-    <link rel="stylesheet" href="/static/css/bactmenthaDB_stylesheet.css" /> 
-    <!-- Include the CSS file for datatable -->
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+<head>
+    <meta charset="utf-8">
+    <title>Statistics-BactMentha</title>
+    <!-- D3 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+    <!-- BactMentha JS -->
+    <script src="/static/js/bactmenthaDB_library.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/3.2.5/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.5/js/buttons.html5.min.js"></script>
+    <!-- JSZip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- pdfmake -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <!-- BactMentha CSS -->
+    <link rel="stylesheet" href="/static/css/bactmenthaDB_stylesheet.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
   </head>
 <!--=============================================================================================================================================-->
 <!--=================================================================== BODY ====================================================================-->
@@ -264,18 +282,7 @@
             }
             echo "<script>addExportAllBtn = ".$addExportAllBtn.";</script>";
         }
-
-        if (isset($_GET["unsetBmIdsToExport"])) {
-            unset($_SESSION["BmIdsToExport_browse"]);
-        }
-        elseif(isset($_SESSION["BmIdsToExport_browse"])) {
-          $files = downloadSearchCsvFiles($_SESSION["BmIdsToExport_browse"]);
-          echo '<script>downloadFiles(' . $files . ');</script>';
-        };
-  
-        if (isset($_POST["BmIdsToExport"])) {
-            $_SESSION["BmIdsToExport_browse"] = $_POST["BmIdsToExport"];
-        }
+        
 
       ?>
 <!----------------------------------------------------------------- RESET BUTTON ------------------------------------------------------------------>
@@ -312,6 +319,8 @@
                // find the official name to display (more readable, no underscores)
             echo "<script>$('#view_choice_form').hide();</script>";
             echo "<br><label class='home_news_title2'>".$view_label_to_display."</label>" ;  // and display it.
+
+            echo("<br><br><div id='downloadStatus' style='display: none;'></div><br>");
         }
 
         //___________________________________________________________________________________________________________
@@ -333,7 +342,7 @@
             }
 
             $find_col_query = $psql_query.' LIMIT 0;';              // Taking the table header without the data
-            $find_col_result = pg_query($find_col_query) or die('Error in the query execution : ' . pg_last_error());
+            $find_col_result = pg_query($dbconn, $psql_query) or die('Error in the query execution : ' . pg_last_error());
             $col_nb = pg_num_fields($find_col_result);              // take the number of columns in the table
             $col_list = array();                                    // empty list that will contain the column names
 
@@ -353,9 +362,10 @@
             // DISPLAY THE TABLE WITH THE SELECTED COLUMN ONLY (-> always in the 'if a table is selected')
     
             // execution of the psql query (set previously right after the if != empty table_name statement)
-            $query_result = pg_query($psql_query) or die('Error in the query execution : ' . pg_last_error());
+            $query_result = pg_query($dbconn, $psql_query) or die('Error in the query execution : ' . pg_last_error());
             
             $AllBmInteractionIds = [];
+
             // HEADER                                                                   // Displaying the resulting table in HTML
             echo("<table id='query_table' class='display stripe table_php'>\n<thead><tr>"); // Creation of the table and its header ()
             
@@ -367,11 +377,11 @@
                 $disp_colname = MapColnameDispname($col_name);           // replace underscores by spaces in headers names
                 // display the col name in a new cell on same line and a select filter
                 if ($col_name != 'annotations') {                        
-                    echo "\n<th col-id='${col_name}' col-index='".($i+1).
-                    "' class='exportable'>${disp_colname}</th>" ;        // avoid exporting annotations column
+                    echo "\n<th col-id='{$col_name}' col-index='".($i+1).
+                    "' class='exportable'>{$disp_colname}</th>" ;        // avoid exporting annotations column
                 }
                 else {                                                   // display the col name in a new cell on same line and a select filter
-                    echo "\n<th col-id='${col_name}' col-index='".($i+1)."'>${disp_colname}</th>" ; 
+                    echo "\n<th col-id='{$col_name}' col-index='".($i+1)."'>{$disp_colname}</th>" ; 
                 }
                 $dispColList[] = $col_name ;                             // add the column to display to be used as key
             }
@@ -416,7 +426,7 @@
         else if (!empty($table_name) && $_SESSION["data_view_type"] == "who_priority") {
             $psql_query = "SELECT * FROM ".$table_name;
             $find_col_query = $psql_query.' LIMIT 0;';
-            $find_col_result = pg_query($find_col_query) or die('Error in the query execution : ' . pg_last_error());
+            $find_col_result = pg_query($dbconn, $psql_query) or die('Error in the query execution : ' . pg_last_error());
             $col_nb = pg_num_fields($find_col_result);
             $col_list = array();
 
@@ -434,7 +444,7 @@
             //___________________________________________________________________________________________________________
             // DISPLAY THE TABLE WITH THE SELECTED COLUMN ONLY (-> always in the 'if a table is selected')
     
-            $query_result = pg_query($psql_query) or die('Error in the query execution : ' . pg_last_error());
+            $query_result = pg_query($dbconn, $psql_query) or die('Error in the query execution : ' . pg_last_error());
 
             // HEADER
             echo("<table id='who_prio_table' class='display stripe table_php'>\n<thead><tr>");
@@ -445,8 +455,8 @@
             for ($i = 0; $i < $col_number; $i++) {
                 $col_name = pg_field_name($query_result, $i);
                 $disp_colname = MapColnameDispname($col_name);
-                echo "\n<th col-id='${col_name}' col-index='".($i+1).
-                    "' class='exportable'>${disp_colname}</th>" ;        
+                echo "\n<th col-id='{$col_name}' col-index='".($i+1).
+                    "' class='exportable'>{$disp_colname}</th>" ;        
                 $dispColList[] = $col_name ;
             }
             echo("</tr></thead><tbody>");   

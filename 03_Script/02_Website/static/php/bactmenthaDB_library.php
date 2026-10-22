@@ -172,7 +172,7 @@ function createToggleColDiv($col_list, $col_nb, $bmId_index) {
         $colname = $col_list[$i];
         $disp_name = MapColnameDispname($col_list[$i]);
         if ($i != $bmId_index) {
-            $linkDiv = "<a class='toggle-vis clicked_button' data-column='${i}'> ${disp_name} </a>"; //<label style='color:#FFA52C'>|</label>
+            $linkDiv = "<a class='toggle-vis clicked_button' data-column='{$i}'> {$disp_name} </a>"; //<label style='color:#FFA52C'>|</label>
             $toggleDiv = $toggleDiv.$linkDiv;
         }
     }
@@ -347,7 +347,7 @@ function findLastUpdate($dbconn) {
      * - date: of the last update
      */
     $psql_query = 'SELECT "version_or_update" FROM "metadata" WHERE "metadata" = \'last_update\'' ;
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $date = pg_fetch_row($query_result)[0];
     return $date ;
 }
@@ -892,7 +892,7 @@ function IsItInMimicintInterface($bmId) {
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
           or die('Unable to connect to the database : ' . pg_last_error());             // starting postgres connection
     $psql_query = 'SELECT exists (SELECT * FROM mimicint_xref WHERE mnt_interaction_id = \''.$bmId.'\' LIMIT 1)';
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $result = pg_fetch_row($query_result)[0];                                           // t (if in mimicint tables) or f.
     $close=pg_close($dbconn);                                                           // Closing postgresql connection
     return $result ;
@@ -913,7 +913,7 @@ function IsItInInteractionFeature($bmId) {
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
           or die('Unable to connect to the database : ' . pg_last_error());             // starting postgres connection
     $psql_query = 'SELECT exists (SELECT * FROM interaction_feature WHERE mnt_interaction_id = \''.$bmId.'\' LIMIT 1)';
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $result = pg_fetch_row($query_result)[0];                                           
     $close=pg_close($dbconn);                                                           // Closing postgresql connection
     return $result ;
@@ -942,7 +942,7 @@ function IsItInProteinAnnotations($bmId) {
 
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
     or die('Unable to connect to the database : ' . pg_last_error());             // starting postgres connection
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $result = pg_fetch_row($query_result)[0];
     $close=pg_close($dbconn);                                                           // Closing postgresql connection
     // returns 'f' (not found) or 't' (found)
@@ -971,7 +971,7 @@ function IsItInCellularComponents($bmId) {
     WHERE IF.mnt_interaction_id = \''.$bmId.'\' LIMIT 1)';
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
     or die('Unable to connect to the database : ' . pg_last_error());             // starting postgres connection
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $result = pg_fetch_row($query_result)[0];
     $close=pg_close($dbconn);                                                           // Closing postgresql connection
     // returns 'f' (not found) or 't' (found)
@@ -991,7 +991,7 @@ function IsItInAlfphafoldComplexes($bmId) {
     WHERE AF.mnt_interaction_id = \''.$bmId.'\' LIMIT 1)';
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
     or die('Unable to connect to the database : ' . pg_last_error());             // starting postgres connection
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $result = pg_fetch_row($query_result)[0];
     $close=pg_close($dbconn);                                                           // Closing postgresql connection
     // returns 'f' (not found) or 't' (found)
@@ -1018,7 +1018,7 @@ function writeMimicintChildTable($queryResult, $tableClass) {
      * Return:
      * - childRowTable: the full html table into a string variable
      */
-    $child_row_table = "<table class='${tableClass}'>\n<thead><tr>";        // beginning of the table
+    $child_row_table = "<table class='{$tableClass}'>\n<thead><tr>";        // beginning of the table
 
     // HEADER
     $col_number = pg_num_fields($queryResult);                              // number of columns
@@ -1028,7 +1028,7 @@ function writeMimicintChildTable($queryResult, $tableClass) {
         $disp_colname = preg_replace('/_+/', ' ', $col_name);                 // replace underscores by spaces in headers names
         $lastLetter = strlen($disp_colname) -1;
         $disp_colname = ucfirst(substr($disp_colname, 0, $lastLetter)) . strtoupper(substr($disp_colname, $lastLetter, 1));
-        $child_row_table .= "\n<th>${disp_colname}</th>" ;    // display the col name in a new cell on same line
+        $child_row_table .= "\n<th>{$disp_colname}</th>" ;    // display the col name in a new cell on same line
         $dispColList[] = $col_name ;                                          // add the column to display to be used as key
       }
     $child_row_table = $child_row_table."</tr></thead><tbody>"; 
@@ -1073,7 +1073,7 @@ function writeFeaturesChildTable($queryResult, $tableClass) {
      * Return:
      * - childRowTable: the full html table into a string variable
      */
-    $child_row_table = "<table class='${tableClass}'>\n<thead><tr>";        // beginning of the table
+    $child_row_table = "<table class='{$tableClass}'>\n<thead><tr>";        // beginning of the table
     // HEADER
     $col_number = pg_num_fields($queryResult);                              // number of columns
     $dispColList = [];                                                      // list of columns to display
@@ -1082,7 +1082,7 @@ function writeFeaturesChildTable($queryResult, $tableClass) {
       $disp_colname = preg_replace('/_+/', ' ', $col_name);                 // replace underscores by spaces in headers names
       $lastLetter = strlen($disp_colname) -1;
       $disp_colname = ucfirst(substr($disp_colname, 0, $lastLetter)) . strtoupper(substr($disp_colname, $lastLetter, 1));
-      $child_row_table .= "\n<th>${disp_colname}</th>" ;    // display the col name in a new cell on same line
+      $child_row_table .= "\n<th>{$disp_colname}</th>" ;    // display the col name in a new cell on same line
       $dispColList[] = $col_name ;                                          // add the column to display to be used as key
     }
     $child_row_table = $child_row_table."</tr></thead><tbody>"; 
@@ -1117,14 +1117,14 @@ function wirteCellCompChildTable($queryResult, $tableClass) {
      * Return:
      * - childRowTable: the full html table into a string variable
      */
-    $child_row_table = "<table class='${tableClass}'>\n<thead><tr>";        // beginning of the table
+    $child_row_table = "<table class='{$tableClass}'>\n<thead><tr>";        // beginning of the table
     // HEADER
     $col_number = pg_num_fields($queryResult);                              // number of columns
     $dispColList = [];                                                      // list of columns to display
     for ($i = 0; $i < $col_number; $i++) {
         $col_name = pg_field_name($queryResult, $i);
         $disp_colname = preg_replace('/_+/', ' ', $col_name); // replace underscores by spaces in headers names and capitalize first letter
-        $child_row_table .= "\n<th>${disp_colname}</th>";
+        $child_row_table .= "\n<th>{$disp_colname}</th>";
         $dispColList[] = $col_name;
     }
     $child_row_table = $child_row_table."</tr></thead><tbody>"; 
@@ -1158,7 +1158,7 @@ function writeAlphaFoldChildTable($queryResult, $tableClass) {
      * Return:
      * - childRowTable: the full html table into a string variable
      */
-    $child_row_table = "<table class='${tableClass}'>\n<thead><tr>";        // beginning of the table
+    $child_row_table = "<table class='{$tableClass}'>\n<thead><tr>";        // beginning of the table
     // HEADER
     $col_number = pg_num_fields($queryResult);                              // number of columns
     $dispColList = [];                                                      // list of columns to display
@@ -1168,7 +1168,7 @@ function writeAlphaFoldChildTable($queryResult, $tableClass) {
         if (in_array($i, [0, 1, 2, 3, 11, 12])) {
             $disp_colname = substr($disp_colname, 0, -1) . strtoupper(substr($disp_colname, -1));
         }
-        $child_row_table .= "\n<th>${disp_colname}</th>";
+        $child_row_table .= "\n<th>{$disp_colname}</th>";
         $dispColList[] = $col_name;
     }
     $child_row_table = $child_row_table."</tr></thead><tbody>"; 
@@ -1214,14 +1214,14 @@ function writeProtAnnotChildTable($queryResult, $tableClass) {
      * Return:
      * - childRowTable: the full html table into a string variable
      */
-    $child_row_table = "<table class='${tableClass}'>\n<thead><tr>";        // beginning of the table
+    $child_row_table = "<table class='{$tableClass}'>\n<thead><tr>";        // beginning of the table
     // HEADER
     $col_number = pg_num_fields($queryResult);                              // number of columns
     $dispColList = [];                                                      // list of columns to display
     // for ($i = 0; $i < $col_number; $i++) {                                  // iterate through the column names
     //   $col_name = pg_field_name($queryResult, $i);                          // takes the new column name
     //   $disp_colname = preg_replace('/_+/', ' ', $col_name);                 // replace underscores by spaces in headers names
-    //   $child_row_table = $child_row_table."\n<th>${disp_colname}</th>" ;    // display the col name in a new cell on same line
+    //   $child_row_table = $child_row_table."\n<th>{$disp_colname}</th>" ;    // display the col name in a new cell on same line
     //   $dispColList[] = $col_name ;                                          // add the column to display to be used as key
     // }
     for ($i = 0; $i < $col_number; $i++) {
@@ -1232,7 +1232,7 @@ function writeProtAnnotChildTable($queryResult, $tableClass) {
             $lastLetter = strlen($disp_colname) -1;
             $disp_colname = ucfirst(substr($disp_colname, 0, $lastLetter)) . strtoupper(substr($disp_colname, $lastLetter, 1));
         }
-        $child_row_table .= "\n<th>${disp_colname}</th>";
+        $child_row_table .= "\n<th>{$disp_colname}</th>";
         $dispColList[] = $col_name;
     }
     $child_row_table = $child_row_table."</tr></thead><tbody>"; 
@@ -1275,11 +1275,11 @@ function dispMimicintChildRow($bmId) {
         CAST(SPLIT_PART(MI.interface_end_interactor_idb, '.', 1) AS INTEGER) AS interface_end_B 
     FROM mimicint_interface AS MI 
     INNER JOIN mimicint_xref AS MX ON MI.mimicint_interaction_id = MX.mimicint_interaction_id 
-    WHERE MX.mnt_interaction_id = '${bmId}' ";
+    WHERE MX.mnt_interaction_id = '{$bmId}' ";
 
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')      // starting postgres connection
     or die('Unable to connect to the database : ' . pg_last_error());                                   // or send an error message
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
     $close=pg_close($dbconn);                                                                           // closing postgresql connection
 
     $childRowTable = writeMimicintChildTable($query_result, 'display stripe child_table_MI');                      // child table creation
@@ -1308,7 +1308,7 @@ function dispInteractionFeatureChildRow($bmId) {
         IFT.feature_start_interactor_idB AS feature_start_B, 
         IFT.feature_end_interactor_idB AS feature_end_B
     FROM interaction_feature AS IFT
-    WHERE IFT.mnt_interaction_id = '${bmId}' 
+    WHERE IFT.mnt_interaction_id = '{$bmId}' 
     ORDER BY
     CASE 
         WHEN IFT.feature_start_interactor_idA = '-' THEN 9999
@@ -1329,7 +1329,7 @@ function dispInteractionFeatureChildRow($bmId) {
 
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')      // starting postgres connection
     or die('Unable to connect to the database : ' . pg_last_error());                                   // or send an error message
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
     $close=pg_close($dbconn);                                                                           // closing postgresql connection
     $childRowTable = writeFeaturesChildTable($query_result, 'display stripe child_table_BR');                      // child table creation
     return $childRowTable ;                                                                             // return the html table in a string
@@ -1362,12 +1362,12 @@ function dispProtAnnotationChildRow($bmId) {
     INNER JOIN uniprot_protein AS UP ON UP.uniprot_ac = PA.uniprot_ac 
     INNER JOIN uniprot_xref AS UX ON UX.uniprot_ac = UP.uniprot_ac 
     INNER JOIN interaction_full AS IF ON IF.interactor_idA = UX.interactor_id 
-    WHERE IF.mnt_interaction_id = '${bmId}' 
+    WHERE IF.mnt_interaction_id = '{$bmId}' 
     ORDER BY Sequence_identity DESC;";
 
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')      // starting postgres connection
     or die('Unable to connect to the database : ' . pg_last_error());                                   // or send an error message
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
     $close=pg_close($dbconn);                                                                           // closing postgresql connection
     $childRowTable = writeProtAnnotChildTable($query_result, 'display stripe child_table_PA');                    // child table creation
     return $childRowTable ;
@@ -1394,11 +1394,11 @@ function dispCellCompChildRow($bmId) {
     INNER JOIN cellular_components AS CC
         ON CC.uniprot_ac = IF.interactor_idA
         OR CC.uniprot_ac = IF.interactor_idB
-    WHERE IF.mnt_interaction_id = '${bmId}' 
+    WHERE IF.mnt_interaction_id = '{$bmId}' 
     ORDER BY CC.uniprot_ac;";
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')      // starting postgres connection
     or die('Unable to connect to the database : ' . pg_last_error());                                   // or send an error message
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
     $close=pg_close($dbconn);                                                                           // closing postgresql connection
     $childRowTable = wirteCellCompChildTable($query_result, 'display stripe child_table_CC');                    // child table creation
     return $childRowTable ;
@@ -1429,12 +1429,12 @@ function dispAlphaFoldChildRow($bmId) {
         AF.contacts_on_A AS contacts_on_A, 
         AF.contacts_on_B AS contacts_on_B
     FROM af3_predictions AS AF 
-    WHERE AF.mnt_interaction_id = '${bmId}' 
+    WHERE AF.mnt_interaction_id = '{$bmId}' 
     ORDER BY model;";
 
     $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')      // starting postgres connection
     or die('Unable to connect to the database : ' . pg_last_error());                                   // or send an error message
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());  // query execution
     $close=pg_close($dbconn);                                                                           // closing postgresql connection
     $childRowTable = writeAlphaFoldChildTable($query_result, 'display stripe child_table_AF');                    // child table creation
     return $childRowTable ;
@@ -1535,7 +1535,7 @@ function verifDBcontainSearch($searched_element, $type) {
     }
     // ask the database (not caring about upper or lowercase by converting letters into uppercase)
     $psql_query = 'SELECT EXISTS (SELECT '.$column.' FROM '.$table.' AS '.$alias.' WHERE upper('.$column.') LIKE upper(\''.$searched_element.'\') LIMIT 1)' ;
-    $query_result = pg_query($psql_query) or die("\nError in the query execution : ".pg_last_error());
+    $query_result = pg_query($dbconn, $psql_query) or die("\nError in the query execution : ".pg_last_error());
     $result = pg_fetch_row($query_result)[0];           // t or f.
     $close=pg_close($dbconn);                           // Closing postgresql connection
     return $result ;
@@ -1789,10 +1789,10 @@ function searchTableCreation($query_result) {
         $col_name = pg_field_name($query_result, $i);                                 // takes the new col name
         $disp_colname = MapColnameDispname($col_name);                                // replace underscores by spaces in headers names
         if ($col_name != 'annotations') {                                             // avoid exporting annotations column
-            echo "\n<th col-id='${col_name}' col-index='".($i)."' class='exportable'>${disp_colname}</th>" ; 
+            echo "\n<th col-id='{$col_name}' col-index='".($i)."' class='exportable'>{$disp_colname}</th>" ; 
         }
         else {                                                                        // display the col name in a new cell on same line and a select filter
-            echo "\n<th col-id='${col_name}' col-index='".($i)."'>${disp_colname}</th>" ; 
+            echo "\n<th col-id='{$col_name}' col-index='".($i)."'>{$disp_colname}</th>" ; 
         }
         $dispColList[] = $col_name ;                                                  // add the column to display to be used as key
     }
@@ -2109,7 +2109,6 @@ function createQueryResultFile($filename, $query_result) {
 }
 
 function downloadSearchCsvFiles($bmIdsToExport) {
-    $size = count($bmIdsToExport);
     $mimicint_bmIds = [];
     $features_bmIds = [];
     $protAnnot_bmIds = [];
@@ -2117,44 +2116,205 @@ function downloadSearchCsvFiles($bmIdsToExport) {
     $alphafold_bmIds = [];
     $files = [];
 
-    foreach($bmIdsToExport as $bmId) {
-        if (IsItInProteinAnnotations($bmId) == 't') { $protAnnot_bmIds[] = $bmId; }
-        if (IsItInCellularComponents($bmId) == 't') { $cellcomp_bmIds[] = $bmId; }
-        if (IsItInInteractionFeature($bmId) == 't') { $features_bmIds[] = $bmId; }
-        if (IsItInMimicintInterface($bmId) == 't') { $mimicint_bmIds[] = $bmId; }
-        if (IsItInAlfphafoldComplexes($bmId) == 't') { $alphafold_bmIds[] = $bmId; }
-    };
+    $dbconn = pg_connect('host=db port=5432 dbname=bactmentha_db user=postgres password=postgres')
+        or die('Unable to connect to the database : ' . pg_last_error());
 
-    $randomString = bin2hex(random_bytes(4)); // Generates a random hexadecimal string
+    // Send all BMIDs to PostgreSQL as one JSON parameter.
+    $bmIdsJson = json_encode(array_values($bmIdsToExport));
 
+    // Find BMIDs present in mimicint_xref
+    $query = '
+        SELECT DISTINCT mnt_interaction_id
+        FROM mimicint_xref
+        WHERE mnt_interaction_id IN (
+            SELECT jsonb_array_elements_text($1::jsonb)
+        )';
+
+    $result = pg_query_params($dbconn, $query, [$bmIdsJson])
+        or die("\nError in the query execution : " . pg_last_error($dbconn));
+
+    while ($row = pg_fetch_assoc($result)) {
+        $mimicint_bmIds[] = $row['mnt_interaction_id'];
+    }
+
+    // Find BMIDs present in interaction_feature
+    $query = '
+        SELECT DISTINCT mnt_interaction_id
+        FROM interaction_feature
+        WHERE mnt_interaction_id IN (
+            SELECT jsonb_array_elements_text($1::jsonb)
+        )';
+
+    $result = pg_query_params($dbconn, $query, [$bmIdsJson])
+        or die("\nError in the query execution : " . pg_last_error($dbconn));
+
+    while ($row = pg_fetch_assoc($result)) {
+        $features_bmIds[] = $row['mnt_interaction_id'];
+    }
+
+    // Find BMIDs with protein annotations.
+    // This preserves the behavior of your current IsItInProteinAnnotations(),
+    // which checks the interactor_idA side.
+    $query = '
+        SELECT DISTINCT IF.mnt_interaction_id
+        FROM protein_annotation AS PA
+        INNER JOIN uniprot_protein AS UP
+            ON PA.uniprot_ac = UP.uniprot_ac
+        INNER JOIN uniprot_xref AS UX
+            ON UP.uniprot_ac = UX.uniprot_ac
+        INNER JOIN interaction_full AS IF
+            ON UX.interactor_id = IF.interactor_ida
+        WHERE IF.mnt_interaction_id IN (
+            SELECT jsonb_array_elements_text($1::jsonb)
+        )';
+
+    $result = pg_query_params($dbconn, $query, [$bmIdsJson])
+        or die("\nError in the query execution : " . pg_last_error($dbconn));
+
+    while ($row = pg_fetch_assoc($result)) {
+        $protAnnot_bmIds[] = $row['mnt_interaction_id'];
+    }
+
+    // Find BMIDs present in cellular_components
+    $query = '
+        SELECT DISTINCT IF.mnt_interaction_id
+        FROM interaction_full AS IF
+        INNER JOIN cellular_components AS CC
+            ON CC.uniprot_ac = IF.interactor_idA
+            OR CC.uniprot_ac = IF.interactor_idB
+        WHERE IF.mnt_interaction_id IN (
+            SELECT jsonb_array_elements_text($1::jsonb)
+        )';
+
+    $result = pg_query_params($dbconn, $query, [$bmIdsJson])
+        or die("\nError in the query execution : " . pg_last_error($dbconn));
+
+    while ($row = pg_fetch_assoc($result)) {
+        $cellcomp_bmIds[] = $row['mnt_interaction_id'];
+    }
+
+    // Find BMIDs present in AlphaFold 3 predictions
+    $query = '
+        SELECT DISTINCT mnt_interaction_id
+        FROM af3_predictions
+        WHERE mnt_interaction_id IN (
+            SELECT jsonb_array_elements_text($1::jsonb)
+        )';
+
+    $result = pg_query_params($dbconn, $query, [$bmIdsJson])
+        or die("\nError in the query execution : " . pg_last_error($dbconn));
+
+    while ($row = pg_fetch_assoc($result)) {
+        $alphafold_bmIds[] = $row['mnt_interaction_id'];
+    }
+
+    pg_close($dbconn);
+
+    $randomString = bin2hex(random_bytes(4));
+
+    // Full interaction data
     $fullInteractionDataTable = query_full_interaction_data($bmIdsToExport);
-    $files[] = createQueryResultFile("bactmentha_".$randomString."_full_interaction_data.csv", $fullInteractionDataTable);
-    if (sizeof($mimicint_bmIds) >= 1) { 
-        $mimicintInteractionDataTable = query_mimicint_data($mimicint_bmIds); 
-        $files[] = createQueryResultFile("bactmentha_".$randomString."_mimicint_interfaces.csv", $mimicintInteractionDataTable);
+    $files[] = createQueryResultFile(
+        "bactmentha_".$randomString."_full_interaction_data.csv",
+        $fullInteractionDataTable
+    );
+
+    // MimicINT
+    if (sizeof($mimicint_bmIds) >= 1) {
+        $mimicintInteractionDataTable = query_mimicint_data($mimicint_bmIds);
+        $files[] = createQueryResultFile(
+            "bactmentha_".$randomString."_mimicint_interfaces.csv",
+            $mimicintInteractionDataTable
+        );
     }
-    if (sizeof($features_bmIds) >= 1) { 
+
+    // Binding regions
+    if (sizeof($features_bmIds) >= 1) {
         $featureInteractionDataTable = query_feature_data($features_bmIds);
-        $files[] = createQueryResultFile("bactmentha_".$randomString."_binding_regions.csv", $featureInteractionDataTable);
+        $files[] = createQueryResultFile(
+            "bactmentha_".$randomString."_binding_regions.csv",
+            $featureInteractionDataTable
+        );
     }
-    if (sizeof($protAnnot_bmIds) >= 1) { 
+
+    // Protein annotations
+    if (sizeof($protAnnot_bmIds) >= 1) {
         $protAnnotInteractionDataTable = query_protAnnot_data($protAnnot_bmIds);
-        $files[] = createQueryResultFile("bactmentha_".$randomString."_bacterial_proteins_annotations.csv", $protAnnotInteractionDataTable);
+        $files[] = createQueryResultFile(
+            "bactmentha_".$randomString."_bacterial_proteins_annotations.csv",
+            $protAnnotInteractionDataTable
+        );
     }
-    if (sizeof($alphafold_bmIds) >= 1) { 
+
+    // AlphaFold 3
+    if (sizeof($alphafold_bmIds) >= 1) {
         $alaphafoldInteractionDataTable = query_alphafold_data($alphafold_bmIds);
-        $files[] = createQueryResultFile("bactmentha_".$randomString."_af3_predictions.csv", $alaphafoldInteractionDataTable);
+        $files[] = createQueryResultFile(
+            "bactmentha_".$randomString."_af3_predictions.csv",
+            $alaphafoldInteractionDataTable
+        );
     }
-    if (sizeof($cellcomp_bmIds) >= 1) { 
+
+    // Cellular components
+    if (sizeof($cellcomp_bmIds) >= 1) {
         $cellcompInteractionDataTable = query_cellcomp_data($cellcomp_bmIds);
-        $files[] = createQueryResultFile("bactmentha_".$randomString."_cellular_components.csv", $cellcompInteractionDataTable);
+        $files[] = createQueryResultFile(
+            "bactmentha_".$randomString."_cellular_components.csv",
+            $cellcompInteractionDataTable
+        );
     }
+
     return json_encode($files);
 }
 
+
+// function downloadSearchCsvFiles($bmIdsToExport) {
+//     $size = count($bmIdsToExport);
+//     $mimicint_bmIds = [];
+//     $features_bmIds = [];
+//     $protAnnot_bmIds = [];
+//     $cellcomp_bmIds = [];
+//     $alphafold_bmIds = [];
+//     $files = [];
+
+//     foreach($bmIdsToExport as $bmId) {
+//         if (IsItInProteinAnnotations($bmId) == 't') { $protAnnot_bmIds[] = $bmId; }
+//         if (IsItInCellularComponents($bmId) == 't') { $cellcomp_bmIds[] = $bmId; }
+//         if (IsItInInteractionFeature($bmId) == 't') { $features_bmIds[] = $bmId; }
+//         if (IsItInMimicintInterface($bmId) == 't') { $mimicint_bmIds[] = $bmId; }
+//         if (IsItInAlfphafoldComplexes($bmId) == 't') { $alphafold_bmIds[] = $bmId; }
+//     };
+
+//     $randomString = bin2hex(random_bytes(4)); // Generates a random hexadecimal string
+
+//     $fullInteractionDataTable = query_full_interaction_data($bmIdsToExport);
+//     $files[] = createQueryResultFile("bactmentha_".$randomString."_full_interaction_data.csv", $fullInteractionDataTable);
+//     if (sizeof($mimicint_bmIds) >= 1) { 
+//         $mimicintInteractionDataTable = query_mimicint_data($mimicint_bmIds); 
+//         $files[] = createQueryResultFile("bactmentha_".$randomString."_mimicint_interfaces.csv", $mimicintInteractionDataTable);
+//     }
+//     if (sizeof($features_bmIds) >= 1) { 
+//         $featureInteractionDataTable = query_feature_data($features_bmIds);
+//         $files[] = createQueryResultFile("bactmentha_".$randomString."_binding_regions.csv", $featureInteractionDataTable);
+//     }
+//     if (sizeof($protAnnot_bmIds) >= 1) { 
+//         $protAnnotInteractionDataTable = query_protAnnot_data($protAnnot_bmIds);
+//         $files[] = createQueryResultFile("bactmentha_".$randomString."_bacterial_proteins_annotations.csv", $protAnnotInteractionDataTable);
+//     }
+//     if (sizeof($alphafold_bmIds) >= 1) { 
+//         $alaphafoldInteractionDataTable = query_alphafold_data($alphafold_bmIds);
+//         $files[] = createQueryResultFile("bactmentha_".$randomString."_af3_predictions.csv", $alaphafoldInteractionDataTable);
+//     }
+//     if (sizeof($cellcomp_bmIds) >= 1) { 
+//         $cellcompInteractionDataTable = query_cellcomp_data($cellcomp_bmIds);
+//         $files[] = createQueryResultFile("bactmentha_".$randomString."_cellular_components.csv", $cellcompInteractionDataTable);
+//     }
+//     return json_encode($files);
+// }
+
 /* Clean the /tmp/bactmentha_download folder by erasing the old files */
 function cleanupOldFiles() {
-    $maxAgeInSeconds = 86400; // 86400 seconds = 24 hours
+    $maxAgeInSeconds = 600; // 10 minutes
     $currentTime = time();
     $dir = opendir('/tmp/bactmentha_download');
     // Loop through each file in the directory
@@ -2171,7 +2331,6 @@ function cleanupOldFiles() {
         }
     }
     closedir($dir);
-    echo('<script>console.log("erased the old files")</script>');
 }
 
 ?>

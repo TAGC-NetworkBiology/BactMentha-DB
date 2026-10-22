@@ -6,7 +6,7 @@
 # Base image
 # ----------
 
-FROM php:7.4-fpm-alpine3.13
+FROM php:8.6.0RC4-fpm-bookworm
 
 # Copy custom php.ini file
 COPY php.ini /usr/local/etc/php/php.ini
@@ -15,7 +15,7 @@ COPY php.ini /usr/local/etc/php/php.ini
 # installing postgres dependencies for php
 # ----------------------------------------
 
-RUN apk update && apk add --no-cache \
-        postgresql-dev \
-    && docker-php-ext-install -j$(nproc) pgsql \
-    && docker-php-ext-install -j$(nproc) pdo_pgsql
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libpq-dev \
+    && docker-php-ext-install -j$(nproc) pgsql pdo_pgsql \
+    && rm -rf /var/lib/apt/lists/*
