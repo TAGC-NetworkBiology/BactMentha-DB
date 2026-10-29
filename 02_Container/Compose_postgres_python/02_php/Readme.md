@@ -1,18 +1,18 @@
 # `CREATION OF THE PHP IMAGE FOR BACTMENTHA_DB`
 
-This dockerfile permits to build an image starting from **`php : 8.6.0RC4-fpm-bookworm`**.  
+This dockerfile permits to build an image starting from **`php:8.5.12-fpm-alpine`**.  
 Thanks to this image, the webserver nginx (if used, else the computer) will be able to `access the BactMentha Database`.  
 It will be able to make some requests on the database to display the data on the webpage.  
 
 ## `IMAGE CONTENT :`
 
 This image contains :  
-- php : 8.6.0RC4-fpm-bookworm
+- php : 8.5.12-fpm-alpine
 - pgsql extension for php (latest)
 - pdo_pgsql etension for php (latest)
 - pdo_pgsql extension (latest)
 
-*NB : for the `latest` versions, downloaded in date `22nd October 2026`.*
+*NB : for the `latest` versions, downloaded in date `29nd October 2026`.*
 
 A copy of the *`php.ini`* file is also added to the image so ensure this file is located in the same folder as the dockerfile before to build the image. Here is the php.ini content:
 post_max_size = 20M

@@ -48,7 +48,7 @@
 <!--=============================================================================================================================================-->
 <head>
     <meta charset="utf-8">
-    <title>Statistics-BactMentha</title>
+    <title>Contact-BactMentha</title>
     <!-- D3 -->
     <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
     <!-- Plotly -->
@@ -58,10 +58,10 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- DataTables -->
-    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.11/js/jquery.dataTables.min.js"></script>
     <!-- DataTables Buttons -->
-    <script src="https://cdn.datatables.net/buttons/3.2.5/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.2.5/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <!-- pdfmake -->
@@ -72,7 +72,7 @@
     <!-- BactMentha CSS -->
     <link rel="stylesheet" href="/static/css/bactmenthaDB_stylesheet.css">
     <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.11/css/jquery.dataTables.min.css">
   </head>
 <!--=============================================================================================================================================-->
 <!--=================================================================== BODY ====================================================================-->
